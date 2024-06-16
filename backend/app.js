@@ -16,6 +16,6 @@ app.use('/apps', appRoutes);
 app.use('/users', userRoutes);
 
 connectToMongoDB();
-app.listen(port, () => {
+app.listen(PORT, () => {
   console.log(`App listening at http://localhost:${PORT}`);
 });;

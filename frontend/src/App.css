@@ -1,0 +1,14 @@
+/* Global styles */
+/* src/index.css */
+@import './styles/tailwind.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body, html {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background-color: #212121; /* Darker background color */
+  color: #fff; /* Default text color */
+}

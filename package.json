@@ -5,19 +5,23 @@
     "concurrently": "^8.2.2"
   },
   "devDependencies": {
+    "autoprefixer": "^10.4.19",
+    "eslint": "^9.4.0",
     "husky": "^9.0.11",
     "lint-staged": "^15.2.6",
-    "eslint": "^9.4.0",
+    "postcss": "^8.4.38",
     "prettier": "^3.3.2"
   },
   "scripts": {
     "start": "concurrently \"npm run server\" \"npm run client\"",
     "server": "cd backend && npm run dev",
-    "client": "cd frontend && npm start",
+    "client": "cd frontend && npm run dev",
     "lint": "eslint . --ext .js,.jsx",
     "lint:fix": "eslint . --ext .js,.jsx --fix",
     "format": "prettier --write \"**/*.{js,jsx,json,css,md}\"",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "dev": "vite",
+    "build": "vite build"
   },
   "husky": {
     "hooks": {
