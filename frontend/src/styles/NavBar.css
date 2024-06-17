@@ -1,8 +1,8 @@
 /* NavBar styles */
 .navbar {
-    background-color: #f44336; /* Red background color */
-    color: #fff; /* Text color */
-    padding: 10px 0;
+    background-color: #eee; /* Red background color */
+    color: #E2001A; /* Text color */
+    padding: 25px 0;
     margin: 0; /* Remove default margin */
   }
   
@@ -21,7 +21,7 @@
   }
   
   .logo a {
-    color: #fff; /* Text color for the logo text */
+    color: #E2001A; /* Text color for the logo text */
     text-decoration: none;
   }
   
@@ -38,7 +38,7 @@
   }
   
   .nav-link {
-    color: #fff; /* Text color for navigation links */
+    color: #000; /* Text color for navigation links */
     text-decoration: none;
     transition: color 0.3s ease;
   }

@@ -2,7 +2,13 @@ const express = require('express');
 const router = express.Router();
 const userController = require('../Controllers/userController');
 
-// POST /users/:userId/apps/:appId/install - Install an app version for a user
-router.post('/:userId/apps/:appId/install', userController.installAppVersion);
+// Install an app version for a user
+router.post('/:userId/apps/:appId', userController.installAppVersion);
+
+// List installed apps and their versions
+router.get('/:userId/apps', userController.listInstalledApps);
+
+// Uninstall an app
+router.delete('/:userId/apps/:appId', userController.uninstallApp);
 
 module.exports = router;
