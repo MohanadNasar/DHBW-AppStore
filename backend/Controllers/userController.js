@@ -1,4 +1,5 @@
 const User = require('../Models/User');
+const App = require('../Models/App');
 
 // Install an app version for a user
 const installAppVersion = async (req, res) => {
