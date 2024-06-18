@@ -1,26 +1,27 @@
 // VersionsPage.jsx
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import '../styles/VersionsPage.css';
 
 const VersionsPage = () => {
   const { appId } = useParams(); // Get the appId from URL params
+  const [appName, setAppName] = useState(''); // State for app name
   const [versions, setVersions] = useState([]);
   const [addVersionOpen, setAddVersionOpen] = useState(false); // State for add version modal
-  ///const [editVersionId, setEditVersionId] = useState(null); // State for editing version
   const [deleteVersionId, setDeleteVersionId] = useState(null); // State for deleting version
 
   useEffect(() => {
-    const fetchVersions = async () => {
+    const fetchAppDetailsAndVersions = async () => {
       try {
         const response = await axios.get(`http://localhost:8000/apps/${appId}/versions`);
-        setVersions(response.data);
+        setAppName(response.data.appName); // Set the app name from response
+        setVersions(response.data.versions);
       } catch (error) {
-        console.error('Error fetching versions:', error);
+        console.error('Error fetching app details and versions:', error);
       }
     };
-    fetchVersions();
+    fetchAppDetailsAndVersions();
   }, [appId]);
 
   // Function to open modal for adding a new version
@@ -60,19 +61,21 @@ const VersionsPage = () => {
 
   return (
     <div className="container">
-      <h1>App Versions</h1>
+      <h1>{appName} Versions</h1>
       <div className="versions-actions">
         <button className="button" onClick={openAddVersionModal}>Add Version</button>
       </div>
       <div className="version-list">
         {versions.map(version => (
           <div key={version._id} className="version-card">
-            <h3>{version.versionNumber}</h3>
-            <p>{version.description}</p>
-            <p>Status: {version.isActive ? 'Active' : 'Inactive'}</p>
+            <h3>Version: {version.version}</h3>
+            <p>Enabled: {version.enabled ? 'Yes' : 'No'}</p>
+            <p>Required Params: {version.requiredParams.length==0 ? 'None' : version.requiredParams}</p>
+            <p>Optional Params: {version.optionalParams.length==0 ? 'None' : version.optionalParams}</p>
+            <p>Created At: {new Date(version.createdAt).toLocaleString()}</p>
             <div className="version-actions">
-              <button className="button">Edit</button>
-              <button className="button" onClick={() => openConfirmationModal(version._id)}>Delete</button>
+              <button className="button edit-button">Edit</button>
+              <button className="button delete-button" onClick={() => openConfirmationModal(version._id)}>Delete</button>
             </div>
           </div>
         ))}

@@ -79,7 +79,10 @@ const getAppVersions = async (req, res) => {
         if (!app) {
             return res.status(404).json({ message: 'App not found' });
         }
-        res.status(200).json(app.versions);
+        res.status(200).json({
+            appName: app.name, // Return the app name along with the versions
+            versions: app.versions
+        });
     } catch (error) {
         res.status(400).json({ error: error.message });
     }

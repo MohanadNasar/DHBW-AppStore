@@ -76,7 +76,7 @@ const ViewApp = () => {
           <div key={app._id} className="app-card">
             <h3>{app.name}</h3>
             <p>{app.description}</p>
-            <p>{app.versions.length} Versions</p>
+            <p>No of Versions:{app.versions.length}</p>
             <div className="app-actions">
               <Link to={`/apps/${app._id}/versions`} className="button">Versions</Link>
               <button className="delete-button" onClick={() => openConfirmationModal(app._id)}>Delete App</button>
