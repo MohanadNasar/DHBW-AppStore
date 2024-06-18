@@ -189,6 +189,16 @@ const handleEditSubmit = async (e) => {
   }
 };
 
+// Function to toggle the enabled state of a version
+const toggleEnabled = async (version) => {
+  try {
+    const response = await axios.patch(`http://localhost:8000/apps/${appId}/versions/${version._id}/toggle`);
+    setVersions(versions.map((v) => (v._id === version._id ? response.data : v)));
+  } catch (error) {
+    console.error('Error toggling enabled state:', error);
+  }
+};
+
   return (
     <div className="container">
     <h1>{appName} Versions</h1>
@@ -207,6 +217,12 @@ const handleEditSubmit = async (e) => {
           <p>Created At: {new Date(version.createdAt).toLocaleString()}</p>
           <div className="version-actions">
           <button className="button edit-button" onClick={() => openEditVersionModal(version)}>Edit</button>
+          <button
+              className={`toggle-button ${version.enabled ? 'enable' : 'disable'}`}
+              onClick={() => toggleEnabled(version)}
+            >
+              {version.enabled ? 'Disable' : 'Enable'}
+            </button>
           <button className="button delete-button" onClick={() => openConfirmationModal(version._id)}>Delete</button>
           </div>
         </div>

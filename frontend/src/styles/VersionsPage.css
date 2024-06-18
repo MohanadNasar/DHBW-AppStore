@@ -147,6 +147,34 @@
   background-color: #d32f2f;
 }
 
+/* For the enable feature */
 
-/* For the edit modal */
+
+/* VersionsPage.css */
+
+.toggle-button {
+  padding: 8px 16px; /* Adjust padding to make the button smaller */
+  border: none;
+  cursor: pointer;
+  outline: none;
+  font-size: 14px; /* Keep font-size consistent */
+  border-radius: 4px;
+  width: auto;
+
+}
+
+.toggle-button.enable {
+  background-color: red;
+  color: white;
+}
+
+.toggle-button.disable {
+  background-color: green;
+  color: white;
+}
+
+
+
+
+
 
