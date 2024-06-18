@@ -1,4 +1,3 @@
-// viewApp.jsx
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../styles/ViewApp.css';
@@ -7,6 +6,7 @@ import { Link } from 'react-router-dom';
 const ViewApp = () => {
   const [apps, setApps] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [deleteAppId, setDeleteAppId] = useState(null); // State to hold app id for deletion
 
   useEffect(() => {
     const fetchApps = async () => {
@@ -29,12 +29,36 @@ const ViewApp = () => {
     (app.description && app.description.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
-  const deleteApp = async (appId) => {
+  const deleteApp = async () => {
     try {
-      await axios.delete(`http://localhost:8000/apps/${appId}`);
-      setApps(prevApps => prevApps.filter(app => app._id !== appId));
+      await axios.delete(`http://localhost:8000/apps/${deleteAppId}`);
+      setApps(prevApps => prevApps.filter(app => app._id !== deleteAppId));
+      setDeleteAppId(null); // Reset deleteAppId after deletion
+      const modal = document.getElementById('confirmation-modal');
+      if (modal) {
+        modal.style.display = 'none'; // Hide the modal after deletion
+      }
     } catch (error) {
       console.error('Error deleting app:', error);
+    }
+  };
+
+  const openConfirmationModal = (appId) => {
+    setDeleteAppId(appId);
+    // Delay accessing the modal until after state has updated
+    setTimeout(() => {
+      const modal = document.getElementById('confirmation-modal');
+      if (modal) {
+        modal.style.display = 'flex'; // Display the modal
+      }
+    }, 0);
+  };
+
+  const closeConfirmationModal = () => {
+    setDeleteAppId(null);
+    const modal = document.getElementById('confirmation-modal');
+    if (modal) {
+      modal.style.display = 'none'; // Hide the modal
     }
   };
 
@@ -55,11 +79,24 @@ const ViewApp = () => {
             <p>{app.versions.length} Versions</p>
             <div className="app-actions">
               <Link to={`/apps/${app._id}/versions`} className="button">Versions</Link>
-              <button onClick={() => deleteApp(app._id)}>Delete App</button>
+              <button className="delete-button" onClick={() => openConfirmationModal(app._id)}>Delete App</button>
             </div>
           </div>
         ))}
       </div>
+
+      {/* Confirmation Modal */}
+      {deleteAppId && (
+        <div id="confirmation-modal" className="confirmation-modal">
+          <div className="modal-content">
+            <p>Are you sure you want to delete this app?</p>
+            <div className="modal-buttons">
+              <button className="yes-button" onClick={deleteApp}>Yes</button>
+              <button className="cancel-button" onClick={closeConfirmationModal}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
