@@ -1,5 +1,3 @@
-/* VersionsPage.css */
-
 .container {
   max-width: 800px;
   margin: 20px auto;
@@ -22,7 +20,7 @@
 }
 
 .version-card {
-  position: relative; /* Ensure positioning context */
+  position: relative;
   padding: 20px;
   background-color: #fff;
   border-radius: 8px;
@@ -51,15 +49,62 @@
 
 .modal-content {
   background-color: #fff;
-  padding: 20px;
+  padding: 40px; /* Increased padding for more space */
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   text-align: center;
   position: relative;
+  max-height: 70vh; /* Max height for scrolling, adjust as needed */
+  overflow-y: auto; /* Enable vertical scrolling if content exceeds height */
+  width: 80%; /* Example width, adjust as per your design */
+  max-width: 600px; /* Example max-width, adjust as per your design */
+}
+
+.close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+  color: #f44336; /* Red color */
+  font-size: 24px;
+}
+
+.param-input {
+  margin-bottom: 20px;
+}
+
+.param-input input,
+.param-input select,
+.param-input textarea {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.param-input button {
+  background-color: #f44336;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+.param-input button:hover {
+  background-color: #d32f2f;
 }
 
 .modal-buttons {
-  margin-top: 20px;
+  margin-top: 20px; /* Top margin between buttons and other content */
+  display: flex;
+  justify-content: space-between;
+}
+
+.submit-button {
+  margin-right: 10px; /* Margin between "Add Version" and "Cancel" buttons */
 }
 
 .yes-button {
@@ -102,9 +147,6 @@
   background-color: #d32f2f;
 }
 
-/* Adjust for Add Version button */
-.add-version-button {
-  position: absolute;
-  top: 20px; /* Adjust top positioning */
-  right: 20px; /* Adjust right positioning */
-}
+
+/* For the edit modal */
+
