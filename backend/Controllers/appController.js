@@ -1,5 +1,16 @@
 const App = require('../Models/App');
 
+const getApps = async (req, res) => {
+    try {
+        const apps = await App.find();
+        res.status(200).json(apps);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
+
+
+
 // Create a new app with an initial version
 const createApp = async (req, res) => {
     const { name, description } = req.body;
@@ -7,7 +18,7 @@ const createApp = async (req, res) => {
         // Check if the app name already exists
         const existingApp = await App.findOne({ name });
         if (existingApp) {
-            return res.status(400).json({ message: 'App name already exists' });
+            return res.status(400).json({ message: 'App already exists' });
         }
 
         const newApp = new App({
@@ -145,6 +156,7 @@ const deleteApp = async (req, res) => {
 };
 
 module.exports = {
+    getApps,
     createApp,
     addAppVersion,
     getAppVersions,

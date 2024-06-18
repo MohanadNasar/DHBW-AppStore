@@ -5,6 +5,7 @@ import HomePage from './pages/HomePage';
 import ManageApplications from './pages/ManageApplications';
 import ManageAppStore from './pages/ManageAppStore';
 import CreateApp from './pages/CreateApp';
+import ViewApp from './pages/ViewApp';
 import './App.css'; 
 import './styles/tailwind.css';
 

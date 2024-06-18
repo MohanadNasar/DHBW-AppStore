@@ -1,6 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import '../styles/HomePage.css';
+import manageAppStore_icon from '../assets/manageAppstore.jpg';
+import manageApplications_icon from '../assets/manageApplications.png';
 
 const HomePage = () => {
   return (
@@ -13,13 +15,13 @@ const HomePage = () => {
         <div className="link-container">
           <Link to="/manage-appstore">
             <div className="link-box">
-              <img src="../assets/manageAppstore.jpg" alt="Manage App Store" />
+              <img src={manageAppStore_icon} alt="Manage App Store" />
               <span>Manage App Store</span>
             </div>
           </Link>
           <Link to="/manage-applications">
             <div className="link-box">
-              <img src="../assets/manageApplications.png" alt="Manage Applications" />
+              <img src={manageApplications_icon} alt="Manage Applications" />
               <span>Manage Applications</span>
             </div>
           </Link>

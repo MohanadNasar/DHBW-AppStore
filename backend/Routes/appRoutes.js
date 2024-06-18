@@ -2,6 +2,9 @@ const express = require('express');
 const router = express.Router();
 const appController = require('../Controllers/appController');
 
+// Get all apps
+router.get('/', appController.getApps);
+
 // Create a new app
 router.post('/', appController.createApp);
 

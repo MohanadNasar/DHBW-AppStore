@@ -5,24 +5,28 @@ import '../styles/CreateApp.css';
 const CreateApp = () => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
+  const [message, setMessage] = useState('');
+  const [messageType, setMessageType] = useState(''); // 'success' or 'error'
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
       const response = await axios.post('http://localhost:8000/apps', { name, description }, { withCredentials: true });
-      alert('App created successfully!');
+      setMessage('App created successfully!');
+      setMessageType('success');
       console.log('App created:', response.data);
       // Clear the form
       setName('');
       setDescription('');
     } catch (error) {
       console.error('Error creating app:', error);
-      alert(error.response?.data?.message || 'An error occurred while creating the app');
+      setMessage(error.response?.data?.message || 'An error occurred while creating the app');
+      setMessageType('error');
     }
   };
 
   return (
-    <div className="container">
+    <div className="containerCreate">
       <h1>Create App</h1>
       <form onSubmit={handleSubmit}>
         <div className="form-group">
@@ -44,6 +48,11 @@ const CreateApp = () => {
           />
         </div>
         <button type="submit">Create App</button>
+        {message && (
+          <div className={`message ${messageType}`}>
+            {message}
+          </div>
+        )}
       </form>
     </div>
   );
