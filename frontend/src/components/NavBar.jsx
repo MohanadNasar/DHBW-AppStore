@@ -5,7 +5,7 @@ import '../styles/NavBar.css'; // Import CSS file for NavBar styles
 const NavBar = () => {
   return (
     <nav className="navbar">
-      <div className="container">
+      <div className="navContainer">
         <div className="logo">
           <Link to="/" className="nav-link">
             DHBW App Store

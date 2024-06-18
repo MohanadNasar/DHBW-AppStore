@@ -1,12 +1,12 @@
 /* NavBar styles */
 .navbar {
-    background-color: #eee; /* Red background color */
-    color: #E2001A; /* Text color */
+    background-color: #fff; /* Red background color */
+    color: #e10019; /* Text color */
     padding: 25px 0;
     margin: 0; /* Remove default margin */
   }
   
-  .container {
+  .navContainer {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -21,7 +21,7 @@
   }
   
   .logo a {
-    color: #E2001A; /* Text color for the logo text */
+    color: #e10019; /* Text color for the logo text */
     text-decoration: none;
   }
   

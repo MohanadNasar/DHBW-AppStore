@@ -1,10 +1,28 @@
 const App = require('../Models/App');
 
-// Create a new app
+// Create a new app with an initial version
 const createApp = async (req, res) => {
-    const { name, description, versions } = req.body;
+    const { name, description } = req.body;
     try {
-        const newApp = new App({ name, description, versions });
+        // Check if the app name already exists
+        const existingApp = await App.findOne({ name });
+        if (existingApp) {
+            return res.status(400).json({ message: 'App name already exists' });
+        }
+
+        const newApp = new App({
+            name,
+            description,
+            versions: [
+                {
+                    version: '1.0.0',
+                    requiredParams: [],
+                    optionalParams: [],
+                    enabled: true,
+                    createdAt: new Date(),
+                }
+            ]
+        });
         await newApp.save();
         res.status(201).json(newApp);
     } catch (error) {
@@ -18,11 +36,23 @@ const addAppVersion = async (req, res) => {
     const { version, requiredParams, optionalParams } = req.body;
     try {
         const app = await App.findById(appId);
-        console.log(app)
         if (!app) {
             return res.status(404).json({ message: 'App not found' });
         }
-        app.versions.push({ version, requiredParams, optionalParams });
+
+        // Check if the version already exists
+        const existingVersion = app.versions.find(v => v.version === version);
+        if (existingVersion) {
+            return res.status(400).json({ message: 'Version already exists' });
+        }
+
+        app.versions.push({
+            version,
+            requiredParams,
+            optionalParams,
+            enabled: true,
+            createdAt: new Date(),
+        });
         await app.save();
         res.status(201).json(app);
     } catch (error) {

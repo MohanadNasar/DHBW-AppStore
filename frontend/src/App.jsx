@@ -4,9 +4,9 @@ import NavBar from './components/NavBar';
 import HomePage from './pages/HomePage';
 import ManageApplications from './pages/ManageApplications';
 import ManageAppStore from './pages/ManageAppStore';
-import './App.css'; // Import global CSS for App styles
-import './index.css'; // Import global CSS for index styles
-import './styles/tailwind.css'; // Import Tailwind CSS for global styles  
+import CreateApp from './pages/CreateApp';
+import './App.css'; 
+import './styles/tailwind.css';
 
 const App = () => {
   return (
@@ -17,6 +17,7 @@ const App = () => {
           <Route path="/" exact element={<HomePage />} />
           <Route path="/manage-applications" element={<ManageApplications />} />
           <Route path="/manage-appstore" element={<ManageAppStore />} />
+          <Route path="/create-app" element={<CreateApp />} />
           {/* Add more routes as needed */}
         </Routes>
       </div>

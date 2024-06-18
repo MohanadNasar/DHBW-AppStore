@@ -15,7 +15,7 @@ const AppVersionSchema = new mongoose.Schema({
 });
 
 const AppSchema = new mongoose.Schema({
-    name: { type: String, required: true },
+    name: { type: String, required: true, unique: true },
     description: String,
     versions: [AppVersionSchema],
     createdAt: { type: Date, default: Date.now }
