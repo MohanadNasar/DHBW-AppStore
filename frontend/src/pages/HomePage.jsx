@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import '../styles/HomePage.css';
 import manageAppStore_icon from '../assets/manageAppstore.jpg';
-import manageApplications_icon from '../assets/manageApplications.png';
+import manageApplications_icon from '../assets/ManageApplications.jpg';
 
 const HomePage = () => {
   return (
@@ -23,19 +23,19 @@ const HomePage = () => {
 
       <section className="services-section">
         <h2>Services</h2>
-        <div className="link-container">
-          <Link to="/manage-appstore">
-            <div className="link-box">
-              <img src={manageAppStore_icon} alt="Manage App Store" />
-              <span>Manage App Store</span>
-            </div>
-          </Link>
-          <Link to="/manage-applications">
-            <div className="link-box">
-              <img src={manageApplications_icon} alt="Manage Applications" />
-              <span>Manage Applications</span>
-            </div>
-          </Link>
+        <div className="servicesContent">
+          <div className="serviceBox">
+            <Link to="/manage-appstore" className='link'>
+              <img src={manageAppStore_icon} alt="Manage App Store" className='icon' />
+              <div className='text'>Manage App Store</div>
+            </Link>
+          </div>
+          <div className="serviceBox">
+            <Link to="/manage-applications" className='link'>
+              <img src={manageApplications_icon} alt="Manage Applications" className='icon'/>
+              <div className='text'>Manage Applications</div>  
+            </Link>
+          </div>  
         </div>
       </section>
 
