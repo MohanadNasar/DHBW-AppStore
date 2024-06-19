@@ -163,7 +163,8 @@ const handleSubmit = async (e) => {
       requiredParams: newVersionRequiredParams,
       optionalParams: newVersionOptionalParams,
     });
-    setVersions([...versions, response.data]);
+    setVersions(response.data.versions);
+    console.log('New version added:', response.data);
     setNewVersion(''); // Clear input fields
     setNewVersionRequiredParams([]); // Clear required params
     setNewVersionOptionalParams([]); // Clear optional params
@@ -212,8 +213,8 @@ const toggleEnabled = async (version) => {
         <div key={version._id} className="version-card">
           <h3>Version: {version.version}</h3>
           <p>Enabled: {version.enabled ? 'Yes' : 'No'}</p>
-          <p>Required Params: {version.requiredParams.length === 0 ? 'None' : version.requiredParams.map(param => param.name).join(', ')}</p>
-          <p>Optional Params: {version.optionalParams.length === 0 ? 'None' : version.optionalParams.map(param => param.name).join(', ')}</p>
+          {version.requiredParams && <p>Required Params: {version.requiredParams.length === 0 ? 'None' : version.requiredParams.map(param => param.name).join(', ')}</p>}
+          {version.requiredParams && <p>Optional Params: {version.optionalParams.length === 0 ? 'None' : version.optionalParams.map(param => param.name).join(', ')}</p>}
           <p>Created At: {new Date(version.createdAt).toLocaleString()}</p>
           <div className="version-actions">
           <button className="button edit-button" onClick={() => openEditVersionModal(version)}>Edit</button>
