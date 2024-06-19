@@ -8,7 +8,7 @@
 
 body {
   font-family: 'Open Sans', sans-serif;
-  background-color: #f0f0f0;
+  background-color: #fff;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -33,4 +33,8 @@ button:focus {
 
 .redText {
   color: #e10019;
+}
+
+.greyText {
+  color: #5b6870;
 }

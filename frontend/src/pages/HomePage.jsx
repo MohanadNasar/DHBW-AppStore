@@ -8,10 +8,21 @@ const HomePage = () => {
   return (
     <div className="homepage">
       <div className="welcome-section">
-        <h1>Welcome to <span className='redText'>DHBW-AppStore</span></h1>
-        <p>Creating & Installing Apps are much easier now!!</p>
+        <h1>Welcome to <span className='redText'>DH<span className='greyTextHero'>BW</span></span>-AppStore</h1>
+        <p>Empowering You with Effortless Cloud Application Management</p>
       </div>
-      <div className="content-section">
+
+      <section className="about-section">
+        <div className="about-content">
+          <h2>About Us</h2>
+          <p>
+            Simplifying cloud application management: Our goal is to make it easy for anyone to deploy and manage applications in the cloud, even without technical expertise. Whether you're a beginner or an expert, our platform offers a user-friendly interface to install and manage applications effortlessly.
+          </p>
+        </div>
+      </section>
+
+      <section className="services-section">
+        <h2>Services</h2>
         <div className="link-container">
           <Link to="/manage-appstore">
             <div className="link-box">
@@ -26,7 +37,14 @@ const HomePage = () => {
             </div>
           </Link>
         </div>
-      </div>
+      </section>
+
+      <footer className="footer">
+        <div className="footer-content">
+          <p>&copy; 2024 DHBW-AppStore. All rights reserved.</p>
+          <p>Contact us at <a href="mailto:dennis.pfisterer@dhbw-mannheim.de">dennis.pfisterer@dhbw-mannheim.de</a></p>
+        </div>
+      </footer>
     </div>
   );
 };

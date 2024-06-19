@@ -8,7 +8,7 @@ const NavBar = () => {
       <div className="navContainer">
         <div className="logo">
           <Link to="/" className="nav-link">
-            DHBW App Store
+            DH<span className='greyText'>BW</span> App Store
           </Link>
         </div>
         <ul className="nav-links">
