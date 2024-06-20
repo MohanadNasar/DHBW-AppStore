@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { displaySuccessMessage } from '../utils/messages';
 import { useParams } from 'react-router-dom';
 import '../styles/InstallAppPage.css'; // CSS file for styling
 
@@ -51,7 +52,7 @@ const InstallAppPage = () => {
         parameters: parameters
       });
       console.log(`Version ${selectedVersion} of ${selectedApp.name} installed successfully!`);
-      
+      displaySuccessMessage(`Version ${selectedVersion} of ${selectedApp.name} installed successfully!`);
       setModalOpen(false);
     } catch (error) {
       console.error('Error installing app version:', error);
