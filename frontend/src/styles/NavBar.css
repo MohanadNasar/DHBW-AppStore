@@ -1,6 +1,6 @@
 /* NavBar styles */
 .navbar {
-  background-color: #fff; /* Background color */
+  background-color: #f0f0f0; /* Background color */
   color: #e10019; /* Text color */
   padding: 25px 0;
   margin: 0; /* Remove default margin */
@@ -12,12 +12,13 @@
   align-items: center;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 40px; /* Increase the padding on the container */
 }
 
 .logo {
   font-size: 1.5rem;
   font-weight: bold;
+  margin-right: 40px; /* Add some margin to push it a bit to the left */
 }
 
 .logo a {
@@ -31,6 +32,7 @@
   align-items: center;
   padding: 0;
   margin: 0; /* Remove default margin */
+  flex-grow: 1;
 }
 
 .nav-links li {
@@ -44,19 +46,28 @@
 }
 
 .nav-link:hover {
-  color: #000; /* Black color on hover */
+  color: #e10019; /* Red color on hover */
+}
+
+.nav-auth {
+  margin-left: auto; /* Push this item to the far right */
+  display: flex;
+  align-items: center;
 }
 
 .nav-button {
   background: none;
   border: none;
-  color: #000; /* Text color for navigation buttons */
+  color: red; /* Text color for navigation buttons */
   cursor: pointer;
   font-size: 1rem;
   text-decoration: none;
-  transition: color 0.3s ease;
+  transition: color 0.3s ease, background-color 0.3s ease;
 }
 
 .nav-button:hover {
-  color: #000; /* Black color on hover */
+  color: white; /* White text color on hover */
+  background-color: red; /* Red background color on hover */
+  padding: 5px 10px; /* Optional: Add some padding to make the hover effect more visible */
+  border-radius: 5px; /* Optional: Add border radius for better visuals */
 }

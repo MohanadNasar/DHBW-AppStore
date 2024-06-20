@@ -13,26 +13,27 @@ const registerUser = async (req, res) => {
     }
 };
 
-//Login as a user
+// Login as a user
 const loginUser = async (req, res) => {
     const { username, password } = req.body;
     try {
         const user = await User.findOne({ username });
         if (!user) {
-            return res.status(401).json({ error: 'Login failed! Check authentication credentials' });
+            return res.status(401).json({ error: 'Username does not exist' });
         }
-        
+
         const isMatch = await user.comparePassword(password);
         if (!isMatch) {
-            return res.status(401).json({ error: 'Login failed! Check authentication credentials' });
+            return res.status(401).json({ error: 'Password is wrong' });
         }
-        
-        const token = await user.generateAuthToken(); // Assuming you have a method for this
+
+        const token = user.generateAuthToken();
         res.status(200).json({ user, token });
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
 };
+
 
 
 

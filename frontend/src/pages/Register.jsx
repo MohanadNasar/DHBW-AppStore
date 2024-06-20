@@ -12,11 +12,27 @@ const Register = () => {
   const registerHandler = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:8000/users/', { username, email, password } , {withCredentials: true});
+      await axios.post('http://localhost:8000/users/', { username, email, password }, { withCredentials: true });
+      localStorage.setItem('accountCreated', 'true');
       navigate('/login');
+      displaySuccessMessage('Account created successfully. Please log in.');
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const displaySuccessMessage = (message) => {
+    const messageBox = document.createElement('div');
+    messageBox.textContent = message;
+    messageBox.className = 'success-message';
+    document.body.appendChild(messageBox);
+
+    setTimeout(() => {
+      messageBox.classList.add('hide');
+      setTimeout(() => {
+        document.body.removeChild(messageBox);
+      }, 500); 
+    }, 3000); 
   };
 
   return (

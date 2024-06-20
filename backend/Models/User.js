@@ -1,20 +1,18 @@
-//User.js Model
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
-
-const InstalledAppSchema = new mongoose.Schema({
-    appId: { type: mongoose.Schema.Types.ObjectId, ref: 'App' },
-    version: { type: String, required: true },
-    parameters: mongoose.Schema.Types.Mixed,
-    installedAt: { type: Date, default: Date.now }
-});
+const jwt = require('jsonwebtoken');
 
 const UserSchema = new mongoose.Schema({
     username: { type: String, required: true, unique: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    installedApps: [InstalledAppSchema],
-    createdAt: { type: Date, default: Date.now }
+    installedApps: [
+        {
+            appId: { type: mongoose.Schema.Types.ObjectId, ref: 'App' },
+            version: String,
+            parameters: Object
+        }
+    ]
 });
 
 // Middleware to hash password before saving user
@@ -30,6 +28,12 @@ UserSchema.pre('save', async function(next) {
 // Method to compare entered password with hashed password
 UserSchema.methods.comparePassword = async function(enteredPassword) {
     return await bcrypt.compare(enteredPassword, this.password);
+};
+
+// Method to generate auth token
+UserSchema.methods.generateAuthToken = function() {
+    const token = jwt.sign({ _id: this._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    return token;
 };
 
 module.exports = mongoose.model('User', UserSchema);
