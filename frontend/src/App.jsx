@@ -9,6 +9,7 @@ import ViewApp from './pages/ViewApp';
 import VersionsPage from './pages/VersionsPage';
 import Register from './pages/Register';
 import Login from './pages/Login';
+import InstallAppPage from './pages/InstallAppPage';
 import './App.css'; 
 import './styles/tailwind.css';
 
@@ -27,6 +28,7 @@ const App = () => {
           <Route path="/view-apps" element={<ViewApp />} />
           <Route path="/apps/:appId/versions" element={<VersionsPage />} />
           <Route path="/manage-applications" element={<ManageApplications />} />
+          <Route path="/install-app" element={<InstallAppPage />} />
           {/* Add more routes as needed */}
         </Routes>
       </div>
