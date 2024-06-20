@@ -1,6 +1,41 @@
 const User = require('../Models/User');
 const App = require('../Models/App');
 
+//Register a new user
+const registerUser = async (req, res) => {
+    const { username, email, password } = req.body;
+    try {
+        const user = new User({ username, email, password });
+        await user.save();
+        res.status(201).json(user);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
+
+//Login as a user
+const loginUser = async (req, res) => {
+    const { username, password } = req.body;
+    try {
+        const user = await User.findOne({ username });
+        if (!user) {
+            return res.status(401).json({ error: 'Login failed! Check authentication credentials' });
+        }
+        
+        const isMatch = await user.comparePassword(password);
+        if (!isMatch) {
+            return res.status(401).json({ error: 'Login failed! Check authentication credentials' });
+        }
+        
+        const token = await user.generateAuthToken(); // Assuming you have a method for this
+        res.status(200).json({ user, token });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
+
+
+
 // Install an app version for a user
 const installAppVersion = async (req, res) => {
     const { userId, appId } = req.params;
@@ -72,6 +107,8 @@ const uninstallApp = async (req, res) => {
 };
 
 module.exports = {
+    registerUser,
+    loginUser,
     installAppVersion,
     listInstalledApps,
     uninstallApp

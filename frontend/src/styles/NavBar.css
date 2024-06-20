@@ -1,49 +1,62 @@
 /* NavBar styles */
 .navbar {
-    background-color: #fff; /* Red background color */
-    color: #e10019; /* Text color */
-    padding: 25px 0;
-    margin: 0; /* Remove default margin */
-  }
-  
-  .navContainer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-  }
-  
-  .logo {
-    font-size: 1.5rem;
-    font-weight: bold;
-  }
-  
-  .logo a {
-    color: #000; /* Text color for the logo text */
-    text-decoration: none;
-  }
-  
-  .nav-links {
-    list-style-type: none;
-    display: flex;
-    align-items: center;
-    padding: 0;
-    margin: 0; /* Remove default margin */
-  }
-  
-  .nav-links li {
-    margin-left: 20px;
-  }
-  
-  .nav-link {
-    color: #000; /* Text color for navigation links */
-    text-decoration: none;
-    transition: color 0.3s ease;
-  }
-  
-  .nav-link:hover {
-    color: #000; /* Black color on hover */
-  }
-  
+  background-color: #fff; /* Background color */
+  color: #e10019; /* Text color */
+  padding: 25px 0;
+  margin: 0; /* Remove default margin */
+}
+
+.navContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.logo a {
+  color: #000; /* Text color for the logo text */
+  text-decoration: none;
+}
+
+.nav-links {
+  list-style-type: none;
+  display: flex;
+  align-items: center;
+  padding: 0;
+  margin: 0; /* Remove default margin */
+}
+
+.nav-links li {
+  margin-left: 20px;
+}
+
+.nav-link {
+  color: #000; /* Text color for navigation links */
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+  color: #000; /* Black color on hover */
+}
+
+.nav-button {
+  background: none;
+  border: none;
+  color: #000; /* Text color for navigation buttons */
+  cursor: pointer;
+  font-size: 1rem;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.nav-button:hover {
+  color: #000; /* Black color on hover */
+}

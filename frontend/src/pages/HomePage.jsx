@@ -41,8 +41,8 @@ const HomePage = () => {
 
       <footer className="footer">
         <div className="footer-content">
-          <p>&copy; 2024 DHBW-AppStore. All rights reserved.</p>
           <p>Contact us at <a href="mailto:dennis.pfisterer@dhbw-mannheim.de">dennis.pfisterer@dhbw-mannheim.de</a></p>
+          <p>&copy; 2024 DHBW-AppStore. All rights reserved.</p>
         </div>
       </footer>
     </div>

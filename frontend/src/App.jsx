@@ -7,6 +7,8 @@ import ManageAppStore from './pages/ManageAppStore';
 import CreateApp from './pages/CreateApp';
 import ViewApp from './pages/ViewApp';
 import VersionsPage from './pages/VersionsPage';
+import Register from './pages/Register';
+import Login from './pages/Login';
 import './App.css'; 
 import './styles/tailwind.css';
 
@@ -17,6 +19,8 @@ const App = () => {
         <NavBar />
         <Routes>
           <Route path="/" exact element={<HomePage />} />
+          <Route path="/register" element={<Register/>} />
+          <Route path="/login" element={<Login/>} />
           <Route path="/manage-applications" element={<ManageApplications />} />
           <Route path="/manage-appstore" element={<ManageAppStore />} />
           <Route path="/create-app" element={<CreateApp />} />
