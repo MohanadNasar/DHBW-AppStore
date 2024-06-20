@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useParams } from 'react-router-dom';
 import '../styles/InstallAppPage.css'; // CSS file for styling
 
-const InstallAppPage = ({ userId }) => {
+
+
+const InstallAppPage = () => {
+  const { userId } = useParams();   
   const [apps, setApps] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [installedFilter, setInstalledFilter] = useState('all'); // 'all', 'installed', 'notInstalled'
@@ -19,6 +23,7 @@ const InstallAppPage = ({ userId }) => {
       } catch (error) {
         console.error('Error fetching apps:', error);
       }
+      console.log('userId:', userId);
     };
     fetchApps();
   }, []);
@@ -34,17 +39,19 @@ const InstallAppPage = ({ userId }) => {
   const handleInstallClick = (app) => {
     setSelectedApp(app);
     setSelectedVersion(app.versions[0].version); // Default to the first version
+    setParameters({});
     setModalOpen(true);
   };
 
-  const installAppVersion = async () => {
+  const installAppVersion = async (e) => {
+    e.preventDefault();
     try {
       await axios.post(`http://localhost:8000/users/${userId}/apps/${selectedApp._id}`, {
         version: selectedVersion,
         parameters: parameters
       });
-      // Optionally show a success message or update state to reflect installation
       console.log(`Version ${selectedVersion} of ${selectedApp.name} installed successfully!`);
+      
       setModalOpen(false);
     } catch (error) {
       console.error('Error installing app version:', error);
@@ -75,6 +82,15 @@ const InstallAppPage = ({ userId }) => {
     return filteredApps;
   };
 
+  const handleVersionChange = (e) => {
+    setSelectedVersion(e.target.value);
+    setParameters({});
+  };
+
+  const handleParameterChange = (paramName, value) => {
+    setParameters({ ...parameters, [paramName]: value });
+  };
+
   return (
     <div className="install-app-page">
       <h1>Install an App</h1>
@@ -85,10 +101,11 @@ const InstallAppPage = ({ userId }) => {
           value={searchTerm}
           onChange={handleSearch}
         />
+        <div className='filter-text'>Filter by:</div>
         <div className="filters">
-          <button className={installedFilter === 'all' ? 'active' : ''} onClick={() => handleFilterChange('all')}>All</button>
-          <button className={installedFilter === 'installed' ? 'active' : ''} onClick={() => handleFilterChange('installed')}>Installed</button>
-          <button className={installedFilter === 'notInstalled' ? 'active' : ''} onClick={() => handleFilterChange('notInstalled')}>Not Installed</button>
+          <button className={`filter-button ${installedFilter === 'all' ? 'active' : ''}`} onClick={() => handleFilterChange('all')}>All</button>
+          <button className={`filter-button ${installedFilter === 'installed' ? 'active' : ''}`} onClick={() => handleFilterChange('installed')}>Installed</button>
+          <button className={`filter-button ${installedFilter === 'notInstalled' ? 'active' : ''}`} onClick={() => handleFilterChange('notInstalled')}>Not Installed</button>
         </div>
       </div>
       <div className="app-list">
@@ -106,7 +123,6 @@ const InstallAppPage = ({ userId }) => {
         ))}
       </div>
 
-      {/* Modal for selecting app version and parameters */}
       {selectedApp && (
         <div className={`modal ${modalOpen ? 'open' : ''}`}>
           <div className="modal-content">
@@ -115,29 +131,33 @@ const InstallAppPage = ({ userId }) => {
             <form onSubmit={installAppVersion}>
               <div className="form-group">
                 <label>Select Version:</label>
-                <select value={selectedVersion} onChange={(e) => setSelectedVersion(e.target.value)}>
+                <select value={selectedVersion} onChange={handleVersionChange}>
                   {selectedApp.versions.map(version => (
                     <option key={version.version} value={version.version}>{version.version}</option>
                   ))}
                 </select>
               </div>
-              {/* Example: Add input fields for parameters based on your app's requirements */}
-              <div className="form-group">
-                <label>Parameters:</label>
-                <input
-                  type="text"
-                  placeholder="Parameter 1"
-                  value={parameters.param1 || ''}
-                  onChange={(e) => setParameters({ ...parameters, param1: e.target.value })}
-                />
-                <input
-                  type="text"
-                  placeholder="Parameter 2"
-                  value={parameters.param2 || ''}
-                  onChange={(e) => setParameters({ ...parameters, param2: e.target.value })}
-                />
-                {/* Add more input fields for additional parameters as needed */}
-              </div>
+              {selectedApp.versions.find(v => v.version === selectedVersion).requiredParams.map(param => (
+                <div className="form-group" key={param.name}>
+                  <label>{param.name} ({param.type}):</label>
+                  <input
+                    type="text"
+                    value={parameters[param.name] || ''}
+                    onChange={(e) => handleParameterChange(param.name, e.target.value)}
+                    required
+                  />
+                </div>
+              ))}
+              {selectedApp.versions.find(v => v.version === selectedVersion).optionalParams.map(param => (
+                <div className="form-group" key={param.name}>
+                  <label>{param.name} ({param.type}):</label>
+                  <input
+                    type="text"
+                    value={parameters[param.name] || ''}
+                    onChange={(e) => handleParameterChange(param.name, e.target.value)}
+                  />
+                </div>
+              ))}
               <button type="submit" className="install-button">Install</button>
             </form>
           </div>

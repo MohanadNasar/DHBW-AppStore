@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { displaySuccessMessage } from '../utils/messages';
 import '../styles/Register.css'; // Import the CSS file
 
 const Register = () => {
@@ -21,19 +22,6 @@ const Register = () => {
     }
   };
 
-  const displaySuccessMessage = (message) => {
-    const messageBox = document.createElement('div');
-    messageBox.textContent = message;
-    messageBox.className = 'success-message';
-    document.body.appendChild(messageBox);
-
-    setTimeout(() => {
-      messageBox.classList.add('hide');
-      setTimeout(() => {
-        document.body.removeChild(messageBox);
-      }, 500); 
-    }, 3000); 
-  };
 
   return (
     <div className="form-container">

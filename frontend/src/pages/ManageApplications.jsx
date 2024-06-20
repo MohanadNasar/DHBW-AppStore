@@ -4,12 +4,15 @@ import installAppIcon from '../assets/install_app.jpg'; // Update with your imag
 import myAppsIcon from '../assets/myApps.jpg'; // Update with your image path
 
 const ManageApplications = () => {
+
+  const userId = localStorage.getItem('userId');
+
   return (
     <div className="container">
       <h1 className="title">Manage Applications</h1>
       <div className="content">
         <div className="box">
-          <Link to="/install-app" className="link">
+          <Link to={`/install-app/${userId}`} className="link">
             <img src={installAppIcon} alt="Install App Icon" className="icon" />
             <div className="text">Install App</div>
           </Link>

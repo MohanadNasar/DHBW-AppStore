@@ -28,8 +28,7 @@ const App = () => {
           <Route path="/view-apps" element={<ViewApp />} />
           <Route path="/apps/:appId/versions" element={<VersionsPage />} />
           <Route path="/manage-applications" element={<ManageApplications />} />
-          <Route path="/install-app" element={<InstallAppPage />} />
-          {/* Add more routes as needed */}
+          <Route path="/install-app/:userId" element={<InstallAppPage />} />          {/* Add more routes as needed */}
         </Routes>
       </div>
     </Router>

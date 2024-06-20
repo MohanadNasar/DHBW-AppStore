@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
+import { displaySuccessMessage } from '../utils/messages';
 import '../styles/Register.css'; // Reuse the CSS file for styling
 
 const Login = () => {
@@ -17,6 +18,10 @@ const Login = () => {
         'http://localhost:8000/users/login',
         { username, password }
       );
+      // Extract and store userId in local storage
+      const { user} = data; // Destructure user and token from response
+      localStorage.setItem('userId', user._id); // Store _id as userId
+      console.log('userId:', user._id);
       localStorage.setItem('userInfo', JSON.stringify(data));
       navigate('/');
       // Display success message
@@ -26,20 +31,7 @@ const Login = () => {
     }
   };
 
-  const displaySuccessMessage = (message) => {
-    const messageBox = document.createElement('div');
-    messageBox.textContent = message;
-    messageBox.className = 'success-message';
-    document.body.appendChild(messageBox);
-
-    setTimeout(() => {
-      messageBox.classList.add('hide');
-      setTimeout(() => {
-        document.body.removeChild(messageBox);
-      }, 500); // Match the CSS transition duration
-    }, 3000); // Message display duration (5 seconds)
-  };
-
+  
   return (
     <div className="form-container">
       <div className="form-box">
