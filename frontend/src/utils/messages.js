@@ -12,3 +12,17 @@ export const displaySuccessMessage = (message) => {
     }, 3000); // Message display duration (3 seconds)
   };
   
+  export const displayErrorMessage = (message) => {
+    const messageBox = document.createElement('div');
+    messageBox.textContent = message;
+    messageBox.className = 'error-message';
+    document.body.appendChild(messageBox);
+  
+    setTimeout(() => {
+      messageBox.classList.add('hide');
+      setTimeout(() => {
+        document.body.removeChild(messageBox);
+      }, 500); // Match the CSS transition duration
+    }, 3000); // Message display duration (3 seconds)
+  };
+  

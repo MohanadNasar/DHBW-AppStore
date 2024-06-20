@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import {displaySuccessMessage} from '../utils/messages';
 import { useParams } from 'react-router-dom';
 import '../styles/VersionsPage.css';
 
@@ -66,6 +67,7 @@ const VersionsPage = () => {
       if(modal) {
         modal.style.display = 'none'; // Hide the modal after deletion
       }
+      displaySuccessMessage('Version deleted successfully');
     } catch (error) {
       console.error('Error deleting version:', error);
     }
@@ -169,6 +171,7 @@ const handleSubmit = async (e) => {
     setNewVersionRequiredParams([]); // Clear required params
     setNewVersionOptionalParams([]); // Clear optional params
     setAddVersionOpen(false); // Close the modal after successful submission
+    displaySuccessMessage('Version added successfully');
   } catch (error) {
     console.error('Error adding version:', error);
   }
@@ -185,6 +188,7 @@ const handleEditSubmit = async (e) => {
     });
     setVersions(versions.map((v) => (v._id === editVersion._id ? response.data : v)));
     setEditVersionOpen(false); // Close the modal after successful submission
+    displaySuccessMessage('Version edited successfully');
   } catch (error) {
     console.error('Error editing version:', error);
   }
@@ -195,6 +199,7 @@ const toggleEnabled = async (version) => {
   try {
     const response = await axios.patch(`http://localhost:8000/apps/${appId}/versions/${version._id}/toggle`);
     setVersions(versions.map((v) => (v._id === version._id ? response.data : v)));
+    displaySuccessMessage('Version enabled state toggled successfully');
   } catch (error) {
     console.error('Error toggling enabled state:', error);
   }

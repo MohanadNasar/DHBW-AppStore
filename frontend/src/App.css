@@ -59,7 +59,19 @@ button:focus {
 
 /* Error message */
 .error-message {
-  color: red;
-  margin-top: 10px;
-  text-align: center;
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  background-color: #dc3545;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  opacity: 1;
+  transition: opacity 0.5s ease-in-out;
 }
+
+.error-message.hide {
+  opacity: 0;
+}
+

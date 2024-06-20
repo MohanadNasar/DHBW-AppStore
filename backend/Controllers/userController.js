@@ -53,6 +53,12 @@ const installAppVersion = async (req, res) => {
             return res.status(404).json({ message: 'App not found' });
         }
 
+        // Check if the app version is already installed for the user
+        const alreadyInstalled = user.installedApps.some(app => app.appId === appId && app.version === version);
+        if (alreadyInstalled) {
+            return res.status(400).json({ message: 'This app version is already installed for the user.' });
+        }
+
         // Find the specific version of the app
         const appVersion = app.versions.find(v => v.version === version);
         if (!appVersion) {
@@ -69,17 +75,16 @@ const installAppVersion = async (req, res) => {
             if (!(param.name in parameters)) {
                 return res.status(400).json({ message: `Missing required parameter: ${param.name}` });
             }
-            if (param.value !== parameters[param.value]) {
+            if (param.value !== parameters[param.name]) {
                 return res.status(400).json({ message: `Invalid value for parameter: ${param.name}` });
             }
         }
 
         // Validate optional parameters (optional parameters can be omitted)
         for (let param of appVersion.optionalParams) {
-            if (param.name in parameters && param.value !== parameters[param.value]) {
+            if (param.name in parameters && param.value !== parameters[param.name]) {
                 return res.status(400).json({ message: `Invalid value for optional parameter: ${param.name}` });
             }
-
         }
 
         // Add the app version to the user's installed apps

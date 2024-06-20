@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { displaySuccessMessage, displayErrorMessage } from '../utils/messages'; 
 import '../styles/CreateApp.css';
 
 const CreateApp = () => {
@@ -15,6 +16,7 @@ const CreateApp = () => {
       setMessage('App created successfully!');
       setMessageType('success');
       console.log('App created:', response.data);
+      displaySuccessMessage('App created successfully!');
       // Clear the form
       setName('');
       setDescription('');
@@ -22,6 +24,7 @@ const CreateApp = () => {
       console.error('Error creating app:', error);
       setMessage(error.response?.data?.message || 'An error occurred while creating the app');
       setMessageType('error');
+      displayErrorMessage('An error occurred while creating the app');
     }
   };
 
