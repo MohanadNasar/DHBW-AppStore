@@ -19,12 +19,12 @@ const loginUser = async (req, res) => {
     try {
         const user = await User.findOne({ username });
         if (!user) {
-            return res.status(401).json({ error: 'Invalid credentials' });
+            return res.status(401).json({ error: 'This Username does not exist' });
         }
 
         const isMatch = await user.comparePassword(password);
         if (!isMatch) {
-            return res.status(401).json({ error: 'Invalid credentials' });
+            return res.status(401).json({ error: 'Password is wrong!' });
         }
 
         const token = user.generateAuthToken();
@@ -54,9 +54,9 @@ const installAppVersion = async (req, res) => {
         }
 
         // Check if the app version is already installed for the user
-        const alreadyInstalled = user.installedApps.some(app => app.appId === appId && app.version === version);
+        const alreadyInstalled = user.installedApps.some(installedApp => installedApp.appId.toString() === appId && installedApp.version === version);
         if (alreadyInstalled) {
-            return res.status(400).json({ message: 'This app version is already installed for the user.' });
+            return res.status(400).json({ message: 'You have already Installed this app version' });
         }
 
         // Find the specific version of the app

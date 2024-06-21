@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../styles/ViewApp.css';
+import { displaySuccessMessage } from '../utils/messages';
+
 import { Link } from 'react-router-dom';
 
 const ViewApp = () => {
@@ -35,9 +37,11 @@ const ViewApp = () => {
       setApps(prevApps => prevApps.filter(app => app._id !== deleteAppId));
       setDeleteAppId(null); // Reset deleteAppId after deletion
       const modal = document.getElementById('confirmation-modal');
+
       if (modal) {
         modal.style.display = 'none'; // Hide the modal after deletion
       }
+      displaySuccessMessage('App uninstalled successfully');
     } catch (error) {
       console.error('Error deleting app:', error);
     }

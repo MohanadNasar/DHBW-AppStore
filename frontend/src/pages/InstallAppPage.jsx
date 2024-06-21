@@ -56,7 +56,7 @@ const InstallAppPage = () => {
       setModalOpen(false);
     } catch (error) {
       console.error('Error installing app version:', error);
-      displayErrorMessage('Error installing app version: ' + error.response?.data?.message || 'An error occurred');
+      displayErrorMessage(error.response?.data?.message || 'An error occurred');
     }
   };
 
