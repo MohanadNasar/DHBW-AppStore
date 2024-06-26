@@ -14,7 +14,6 @@ const Register = () => {
     e.preventDefault();
     try {
       await axios.post('http://localhost:8000/users/', { username, email, password }, { withCredentials: true });
-      localStorage.setItem('accountCreated', 'true');
       navigate('/login');
       displaySuccessMessage('Account created successfully. Please log in.');
     } catch (error) {

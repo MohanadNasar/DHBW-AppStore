@@ -1,14 +1,23 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import '../styles/NavBar.css'; // Import CSS file for NavBar styles
 
 const NavBar = () => {
-  const userInfo = localStorage.getItem('userInfo');
-  const isLoggedIn = !!userInfo; // Check if user is logged in
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // State to track login status
   const navigate = useNavigate();
 
+  useEffect(() => {
+    // Check if user is logged in by inspecting local storage or session state
+    const userInfo = localStorage.getItem('userInfo');
+    setIsLoggedIn(!!userInfo); // Set isLoggedIn based on whether userInfo exists
+  }, []);
+
   const handleLogout = () => {
-    localStorage.removeItem('userInfo'); // Remove user info from localStorage
+    // Clear user session information
+    localStorage.removeItem('userId');
+    localStorage.removeItem('userInfo');
+    localStorage.removeItem('token');
+    // Redirect to logout endpoint and then to login page
     navigate('/login');
   };
 
@@ -30,7 +39,6 @@ const NavBar = () => {
           <li>
             <Link to="/manage-appstore" className="nav-link">Manage AppStore</Link>
           </li>
-          {/* Add more navigation links as needed */}
           <div className="nav-auth">
             {isLoggedIn ? (
               <li>
@@ -52,6 +60,5 @@ const NavBar = () => {
     </nav>
   );
 };
-
 
 export default NavBar;

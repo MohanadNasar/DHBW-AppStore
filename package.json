@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "dependencies": {
     "concurrently": "^8.2.2",
-    "cors": "^2.8.5"
+    "cors": "^2.8.5",
+    "keycloak-connect": "^25.0.1"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.19",

@@ -5,7 +5,8 @@ const jwt = require('jsonwebtoken');
 const UserSchema = new mongoose.Schema({
     username: { type: String, required: true, unique: true },
     email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
+    password: { type: String },
+    githubId: { type: String, unique: true, sparse: true }, // Add GitHub ID field
     installedApps: [
         {
             appId: { type: mongoose.Schema.Types.ObjectId, ref: 'App' },

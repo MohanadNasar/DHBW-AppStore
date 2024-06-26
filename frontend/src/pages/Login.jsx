@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import { displaySuccessMessage } from '../utils/messages';
@@ -10,28 +10,51 @@ const Login = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const handleOAuthResponse = async (code) => {
+      try {
+        const response = await axios.post('http://localhost:8000/auth/callback', { code });
+        const { token, user } = response.data;
+        localStorage.setItem('token', token);
+        localStorage.setItem('userInfo', JSON.stringify(user));
+        navigate('/');
+        displaySuccessMessage('Logged in successfully');
+      } catch (error) {
+        setError('Authentication failed. Please try again.');
+      }
+    };
+
+    const extractCodeFromUrl = () => {
+      if (window.location.hash.includes('code')) {
+        const code = new URLSearchParams(window.location.hash.substring(1)).get('code');
+        if (code) {
+          handleOAuthResponse(code);
+        }
+      }
+    };
+
+    extractCodeFromUrl(); // Immediately extract code on component mount
+
+  }, []); // Empty dependency array ensures this effect runs once on mount
 
   const loginHandler = async (e) => {
     e.preventDefault();
     try {
-      const { data } = await axios.post(
-        'http://localhost:8000/users/login',
-        { username, password }
-      );
-      // Extract and store userId in local storage
-      const { user} = data; // Destructure user and token from response
-      localStorage.setItem('userId', user._id); // Store _id as userId
-      console.log('userId:', user._id);
-      localStorage.setItem('userInfo', JSON.stringify(data));
+      const { data } = await axios.post('http://localhost:8000/users/login', { username, password });
+      const { token, user } = data;
+      localStorage.setItem('token', token);
+      localStorage.setItem('userInfo', JSON.stringify(user));
       navigate('/');
-      // Display success message
       displaySuccessMessage('Logged in successfully');
     } catch (error) {
       setError(error.response.data.error);
     }
   };
 
-  
+  const handleGitHubSignIn = () => {
+    window.location.href = 'http://localhost:8180/realms/DHBW-AppStore/protocol/openid-connect/auth?client_id=Ov23liH86yV12vowEovu&redirect_uri=http://localhost:5173&response_mode=fragment&response_type=code&scope=openid';
+  };
+
   return (
     <div className="form-container">
       <div className="form-box">
@@ -55,6 +78,8 @@ const Login = () => {
           <button type="submit">Login</button>
         </form>
         <p>Do not have an account? <Link to="/register">Register here</Link></p>
+        <hr />
+        <button className="github-login-button" onClick={handleGitHubSignIn}>Sign in with GitHub</button>
       </div>
     </div>
   );

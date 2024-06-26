@@ -59,3 +59,20 @@
     background-color: #0056b3; /* Darker blue on hover */
   }
   
+  .github-login-button {
+    display: block;
+    margin: 10px auto;
+    padding: 10px 20px;
+    background-color: #333;
+    color: white;
+    text-align: center;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  .github-login-button:hover {
+    background-color: #555;
+  }
+  
