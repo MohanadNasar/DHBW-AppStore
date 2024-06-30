@@ -10,6 +10,17 @@ const NavBar = () => {
     // Check if user is logged in by inspecting local storage or session state
     const userInfo = localStorage.getItem('userInfo');
     setIsLoggedIn(!!userInfo); // Set isLoggedIn based on whether userInfo exists
+
+    // Event listener to update isLoggedIn dynamically
+    const handleLoginEvent = () => {
+      setIsLoggedIn(true);
+    };
+
+    window.addEventListener('login', handleLoginEvent);
+
+    return () => {
+      window.removeEventListener('login', handleLoginEvent);
+    };
   }, []);
 
   const handleLogout = () => {
@@ -17,6 +28,8 @@ const NavBar = () => {
     localStorage.removeItem('userId');
     localStorage.removeItem('userInfo');
     localStorage.removeItem('token');
+    // Update state to reflect logged out status
+    setIsLoggedIn(false);
     // Redirect to logout endpoint and then to login page
     navigate('/login');
   };

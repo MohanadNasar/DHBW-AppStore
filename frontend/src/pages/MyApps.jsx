@@ -6,8 +6,8 @@ const MyApps = () => {
   const [installedApps, setInstalledApps] = useState([]);
   const [deleteAppId, setDeleteAppId] = useState(null);
   const [error, setError] = useState('');
-  const userId = JSON.parse(localStorage.getItem('userInfo')).user._id;
-
+  const userId = localStorage.getItem('userId');
+  
   useEffect(() => {
     const fetchInstalledApps = async () => {
       try {

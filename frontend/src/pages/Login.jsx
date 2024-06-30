@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import { displaySuccessMessage } from '../utils/messages';
@@ -10,32 +10,11 @@ const Login = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const handleOAuthResponse = async (code) => {
-      try {
-        const response = await axios.post('http://localhost:8000/auth/callback', { code });
-        const { token, user } = response.data;
-        localStorage.setItem('token', token);
-        localStorage.setItem('userInfo', JSON.stringify(user));
-        navigate('/');
-        displaySuccessMessage('Logged in successfully');
-      } catch (error) {
-        setError('Authentication failed. Please try again.');
-      }
-    };
-
-    const extractCodeFromUrl = () => {
-      if (window.location.hash.includes('code')) {
-        const code = new URLSearchParams(window.location.hash.substring(1)).get('code');
-        if (code) {
-          handleOAuthResponse(code);
-        }
-      }
-    };
-
-    extractCodeFromUrl(); // Immediately extract code on component mount
-
-  }, []); // Empty dependency array ensures this effect runs once on mount
+  const handleLoginSuccess = () => {
+    displaySuccessMessage('Logged in successfully');
+    window.dispatchEvent(new Event('login'));
+    navigate('/');
+  };
 
   const loginHandler = async (e) => {
     e.preventDefault();
@@ -44,16 +23,24 @@ const Login = () => {
       const { token, user } = data;
       localStorage.setItem('token', token);
       localStorage.setItem('userInfo', JSON.stringify(user));
-      navigate('/');
-      displaySuccessMessage('Logged in successfully');
+      localStorage.setItem('userId', user._id);
+      handleLoginSuccess();
     } catch (error) {
       setError(error.response.data.error);
     }
   };
 
   const handleGitHubSignIn = () => {
-    window.location.href = 'http://localhost:8180/realms/DHBW-AppStore/protocol/openid-connect/auth?client_id=Ov23liH86yV12vowEovu&redirect_uri=http://localhost:5173&response_mode=fragment&response_type=code&scope=openid';
+    try {
+      console.log('Initiating GitHub sign-in');
+      window.location.href = 'http://localhost:8180/realms/DHBW-AppStore/protocol/openid-connect/auth?client_id=Ov23liH86yV12vowEovu&redirect_uri=http://localhost:5173/&response_mode=fragment&response_type=code&scope=openid';
+    } catch (error) {
+      console.error('Failed to initiate GitHub sign-in:', error);
+      setError('Failed to initiate GitHub sign-in.');
+    }
   };
+  
+  
 
   return (
     <div className="form-container">

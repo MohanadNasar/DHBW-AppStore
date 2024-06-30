@@ -1,16 +1,53 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 import '../styles/HomePage.css';
 import manageAppStore_icon from '../assets/manageAppstore.jpg';
 import manageApplications_icon from '../assets/ManageApplications.jpg';
+import { displaySuccessMessage } from '../utils/messages';
 
 const HomePage = () => {
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const extractCodeFromUrl = () => {
+      const urlParams = new URLSearchParams(window.location.hash.substring(1)); 
+      const code = urlParams.get('code');
+      return code;
+    };
+  
+    const handleOAuthResponse = async (code) => {
+      console.log('Handling OAuth response with code:', code);
+      try {
+        const { data } = await axios.post('http://localhost:8000/auth/callback', { code }, { withCredentials: true });
+        const { token, user } = data;
+        localStorage.setItem('token', token);
+        localStorage.setItem('userInfo', JSON.stringify(user));
+        localStorage.setItem('userId', user._id);
+        displaySuccessMessage('Logged in successfully');
+      } catch (error) {
+        console.error('Error during OAuth response handling:', error.message, error.response?.data);
+        setError('Authentication failed. Please try again.');
+      }
+    };
+  
+    const code = extractCodeFromUrl();
+    console.log('Received code:', code);
+    if (code) {
+      handleOAuthResponse(code);
+    }
+  }, []);
+  
+  
+
   return (
     <div className="homepage">
       <div className="welcome-section">
         <h1>Welcome to <span className='redText'>DH<span className='greyTextHero'>BW</span></span>-AppStore</h1>
         <p>Empowering You with Effortless Cloud Application Management</p>
       </div>
+
+      {error && <div className="error-message">{error}</div>}
 
       <section className="about-section">
         <div className="about-content">
