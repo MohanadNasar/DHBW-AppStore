@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import installAppIcon from '../assets/install_app.jpg'; // Update with your image path
 import myAppsIcon from '../assets/myApps.jpg'; // Update with your image path
 
+
 const ManageApplications = () => {
 
   const userId = localStorage.getItem('userId');

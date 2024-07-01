@@ -6,6 +6,8 @@ import manageAppStore_icon from '../assets/manageAppstore.jpg';
 import manageApplications_icon from '../assets/ManageApplications.jpg';
 import { displaySuccessMessage } from '../utils/messages';
 
+const API_URL = process.env.REACT_APP_API_URL || 'http://backend-service:8000';
+
 const HomePage = () => {
   const [error, setError] = useState('');
 
@@ -19,7 +21,7 @@ const HomePage = () => {
     const handleOAuthResponse = async (code) => {
       console.log('Handling OAuth response with code:', code);
       try {
-        const { data } = await axios.post('http://localhost:8000/auth/callback', { code }, { withCredentials: true });
+        const { data } = await axios.post(`${API_URL}/auth/callback`, { code }, { withCredentials: true });
         const { token, user } = data;
         localStorage.setItem('token', token);
         localStorage.setItem('userInfo', JSON.stringify(user));

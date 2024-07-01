@@ -4,6 +4,7 @@ import '../styles/ManageAppStore.css';
 import createAppIcon from '../assets/create_app.jpeg';
 import viewAppsIcon from '../assets/view_apps.jpg';
 
+
 const ManageAppStore = () => {
   return (
     <div className="container">

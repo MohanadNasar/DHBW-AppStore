@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { displaySuccessMessage } from '../utils/messages';
 import '../styles/Register.css'; // Import the CSS file
 
+const API_URL = process.env.REACT_APP_API_URL || 'http://backend-service:8000';
+
 const Register = () => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
@@ -13,7 +15,7 @@ const Register = () => {
   const registerHandler = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:8000/users/', { username, email, password }, { withCredentials: true });
+      await axios.post(`${API_URL}/users/`, { username, email, password }, { withCredentials: true });
       navigate('/login');
       displaySuccessMessage('Account created successfully. Please log in.');
     } catch (error) {

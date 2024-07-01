@@ -3,6 +3,8 @@ import axios from 'axios';
 import { displaySuccessMessage, displayErrorMessage } from '../utils/messages'; 
 import '../styles/CreateApp.css';
 
+const API_URL = process.env.REACT_APP_API_URL || 'http://backend-service:8000';
+
 const CreateApp = () => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -12,7 +14,7 @@ const CreateApp = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const response = await axios.post('http://localhost:8000/apps', { name, description }, { withCredentials: true });
+      const response = await axios.post(`${API_URL}/apps`, { name, description }, { withCredentials: true });
       setMessage('App created successfully!');
       setMessageType('success');
       console.log('App created:', response.data);

@@ -4,6 +4,8 @@ import {displaySuccessMessage} from '../utils/messages';
 import { useParams } from 'react-router-dom';
 import '../styles/VersionsPage.css';
 
+const API_URL = process.env.REACT_APP_API_URL || 'http://backend-service:8000';
+
 const VersionsPage = () => {
   const { appId } = useParams(); // Get the appId from URL params
   const [appName, setAppName] = useState(''); // State for app name
@@ -20,7 +22,7 @@ const VersionsPage = () => {
   useEffect(() => {
     const fetchAppDetailsAndVersions = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/apps/${appId}/versions`);
+        const response = await axios.get(`${API_URL}/apps/${appId}/versions`);
         setAppName(response.data.appName); // Set the app name from response
         setVersions(response.data.versions);
       } catch (error) {
@@ -60,7 +62,7 @@ const VersionsPage = () => {
   // Function to handle deletion of a version
   const deleteVersion = async (versionId) => {
     try {
-      await axios.delete(`http://localhost:8000/apps/${appId}/versions/${versionId}`);
+      await axios.delete(`${API_URL}/apps/${appId}/versions/${versionId}`);
       setVersions((prevVersions) => prevVersions.filter((v) => v._id !== versionId));
       setDeleteVersionId(null); // Reset deleteVersionId after deletion
       const modal = document.getElementById('confirmation-modal');
@@ -160,7 +162,7 @@ const VersionsPage = () => {
 const handleSubmit = async (e) => {
   e.preventDefault();
   try {
-    const response = await axios.post(`http://localhost:8000/apps/${appId}/versions`, {
+    const response = await axios.post(`${API_URL}/apps/${appId}/versions`, {
       version: newVersion,
       requiredParams: newVersionRequiredParams,
       optionalParams: newVersionOptionalParams,
@@ -181,7 +183,7 @@ const handleSubmit = async (e) => {
 const handleEditSubmit = async (e) => {
   e.preventDefault();
   try {
-    const response = await axios.put(`http://localhost:8000/apps/${appId}/versions/${editVersion._id}`, {
+    const response = await axios.put(`${API_URL}/apps/${appId}/versions/${editVersion._id}`, {
       version: newVersion,
       requiredParams: newVersionRequiredParams,
       optionalParams: newVersionOptionalParams,
@@ -197,7 +199,7 @@ const handleEditSubmit = async (e) => {
 // Function to toggle the enabled state of a version
 const toggleEnabled = async (version) => {
   try {
-    const response = await axios.patch(`http://localhost:8000/apps/${appId}/versions/${version._id}/toggle`);
+    const response = await axios.patch(`${API_URL}/apps/${appId}/versions/${version._id}/toggle`);
     setVersions(versions.map((v) => (v._id === version._id ? response.data : v)));
     displaySuccessMessage('Version enabled state toggled successfully');
   } catch (error) {

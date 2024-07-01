@@ -4,7 +4,7 @@ import { displaySuccessMessage, displayErrorMessage } from '../utils/messages';
 import { useParams } from 'react-router-dom';
 import '../styles/InstallAppPage.css'; // CSS file for styling
 
-
+const API_URL = process.env.REACT_APP_API_URL || 'http://backend-service:8000';
 
 const InstallAppPage = () => {
   const { userId } = useParams();   
@@ -19,7 +19,7 @@ const InstallAppPage = () => {
   useEffect(() => {
     const fetchApps = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/apps');
+        const response = await axios.get(`${API_URL}/apps`);
         setApps(response.data);
       } catch (error) {
         console.error('Error fetching apps:', error);
@@ -47,7 +47,7 @@ const InstallAppPage = () => {
   const installAppVersion = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(`http://localhost:8000/users/${userId}/apps/${selectedApp._id}`, {
+      await axios.post(`${API_URL}/users/${userId}/apps/${selectedApp._id}`, {
         version: selectedVersion,
         parameters: parameters
       });

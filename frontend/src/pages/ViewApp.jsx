@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../styles/ViewApp.css';
 import { displaySuccessMessage } from '../utils/messages';
-
 import { Link } from 'react-router-dom';
+
+const API_URL = process.env.REACT_APP_API_URL || 'http://backend-service:8000';
 
 const ViewApp = () => {
   const [apps, setApps] = useState([]);
@@ -13,7 +14,7 @@ const ViewApp = () => {
   useEffect(() => {
     const fetchApps = async () => {
       try {
-        const response = await axios.get('http://localhost:8000/apps');
+        const response = await axios.get(`${API_URL}/apps`);
         setApps(response.data);
       } catch (error) {
         console.error('Error fetching apps:', error);
@@ -33,7 +34,7 @@ const ViewApp = () => {
 
   const deleteApp = async () => {
     try {
-      await axios.delete(`http://localhost:8000/apps/${deleteAppId}`);
+      await axios.delete(`${API_URL}/apps/${deleteAppId}`);
       setApps(prevApps => prevApps.filter(app => app._id !== deleteAppId));
       setDeleteAppId(null); // Reset deleteAppId after deletion
       const modal = document.getElementById('confirmation-modal');

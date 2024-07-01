@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import '../styles/NavBar.css'; // Import CSS file for NavBar styles
 
+const API_URL = process.env.REACT_APP_API_URL || 'http://backend-service:8000';
+
 const NavBar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false); // State to track login status
   const navigate = useNavigate();

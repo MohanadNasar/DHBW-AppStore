@@ -4,6 +4,8 @@ import { useNavigate, Link } from 'react-router-dom';
 import { displaySuccessMessage } from '../utils/messages';
 import '../styles/Register.css'; // Reuse the CSS file for styling
 
+const API_URL = process.env.REACT_APP_API_URL || 'http://backend-service:8000';
+
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -19,7 +21,7 @@ const Login = () => {
   const loginHandler = async (e) => {
     e.preventDefault();
     try {
-      const { data } = await axios.post('http://localhost:8000/users/login', { username, password });
+      const { data } = await axios.post(`${API_URL}/users/login`, { username, password });
       const { token, user } = data;
       localStorage.setItem('token', token);
       localStorage.setItem('userInfo', JSON.stringify(user));
@@ -33,14 +35,12 @@ const Login = () => {
   const handleGitHubSignIn = () => {
     try {
       console.log('Initiating GitHub sign-in');
-      window.location.href = 'http://localhost:8180/realms/DHBW-AppStore/protocol/openid-connect/auth?client_id=Ov23liH86yV12vowEovu&redirect_uri=http://localhost:5173/&response_mode=fragment&response_type=code&scope=openid';
+      window.location.href = `${API_URL}/auth/github`; // Ensure your backend handles GitHub sign-in at this endpoint
     } catch (error) {
       console.error('Failed to initiate GitHub sign-in:', error);
       setError('Failed to initiate GitHub sign-in.');
     }
   };
-  
-  
 
   return (
     <div className="form-container">

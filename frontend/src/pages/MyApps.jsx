@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../styles/ViewApp.css';
 
+const API_URL = process.env.REACT_APP_API_URL || 'http://backend-service:8000';
+
 const MyApps = () => {
   const [installedApps, setInstalledApps] = useState([]);
   const [deleteAppId, setDeleteAppId] = useState(null);
@@ -11,7 +13,7 @@ const MyApps = () => {
   useEffect(() => {
     const fetchInstalledApps = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/users/${userId}/apps`);
+        const response = await axios.get(`${API_URL}/users/${userId}/apps`);
         setInstalledApps(response.data);
       } catch (error) {
         setError('Error fetching installed apps');
