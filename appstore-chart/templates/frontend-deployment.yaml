@@ -5,6 +5,7 @@ metadata:
   name: frontend-deployment
   labels:
     app.kubernetes.io/managed-by: Helm
+    app: frontend
   annotations:
     meta.helm.sh/release-name: appstore-chart
     meta.helm.sh/release-namespace: default
@@ -20,6 +21,9 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: mohanadnassar/frontend:latest
+          image: mohanadnassar/frontend:2024-07-03
+          env:
+            - name: REACT_APP_BACKEND_URL
+              value: "http://dhbw-appstore.com:8000"
           ports:
             - containerPort: 80

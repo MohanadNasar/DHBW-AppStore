@@ -1,3 +1,4 @@
+//my app.js file
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -12,10 +13,7 @@ const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(bodyParser.json());
-app.use(cors({
-  origin: 'http://dhbw-appstore.com',  
-  credentials: true  
-}));
+app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 
@@ -23,8 +21,8 @@ app.use(express.json());
 const appRoutes = require('./Routes/appRoutes');
 const userRoutes = require('./Routes/userRoutes');
 const authRoutes = require('./Routes/authRoutes');
-app.use('/api/apps', appRoutes);
-app.use('/api/users', userRoutes);
+app.use('/apps', appRoutes);
+app.use('/users', userRoutes);
 
 // Keycloak Configuration
 const memoryStore = new session.MemoryStore();
@@ -48,9 +46,9 @@ app.use(session({
 app.use(keycloak.middleware());
 
 // GitHub Authentication Callback
-app.use('/api/auth', authRoutes);
+app.use('/auth', authRoutes);
 
 connectToMongoDB();
-app.listen(PORT, () => {
-  console.log(`App listening at http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0' ,() => {
+  console.log(`App listening at http://dhbw-appstore.com:${PORT}`);
 });

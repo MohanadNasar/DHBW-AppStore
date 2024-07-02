@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../styles/ViewApp.css';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://backend-service:8000';
+const API_URL = process.env.REACT_APP_API_URL || 'http://dhbw-appstore.com:8000';
 
 const MyApps = () => {
   const [installedApps, setInstalledApps] = useState([]);
@@ -24,7 +24,7 @@ const MyApps = () => {
 
   const uninstallApp = async () => {
     try {
-      await axios.delete(`http://localhost:8000/users/${userId}/apps/${deleteAppId}`);
+      await axios.delete(`${API_URL}/users/${userId}/apps/${deleteAppId}`);
       setInstalledApps(prevApps => prevApps.filter(app => app.appId._id !== deleteAppId));
       setDeleteAppId(null);
       const modal = document.getElementById('confirmation-modal');

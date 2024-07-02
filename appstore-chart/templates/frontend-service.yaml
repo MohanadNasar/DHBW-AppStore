@@ -5,6 +5,7 @@ metadata:
   name: frontend-service
   labels:
     app.kubernetes.io/managed-by: Helm
+    app: frontend
   annotations:
     meta.helm.sh/release-name: appstore-chart
     meta.helm.sh/release-namespace: default

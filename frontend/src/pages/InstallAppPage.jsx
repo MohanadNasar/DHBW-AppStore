@@ -4,7 +4,7 @@ import { displaySuccessMessage, displayErrorMessage } from '../utils/messages';
 import { useParams } from 'react-router-dom';
 import '../styles/InstallAppPage.css'; // CSS file for styling
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://backend-service:8000';
+const API_URL = process.env.REACT_APP_API_URL || 'http://dhbw-appstore.com:8000';
 
 const InstallAppPage = () => {
   const { userId } = useParams();   

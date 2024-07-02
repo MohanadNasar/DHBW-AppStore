@@ -6,7 +6,7 @@ import manageAppStore_icon from '../assets/manageAppstore.jpg';
 import manageApplications_icon from '../assets/ManageApplications.jpg';
 import { displaySuccessMessage } from '../utils/messages';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://backend-service:8000';
+const API_URL = process.env.REACT_APP_API_URL || 'http://dhbw-appstore.com:8000';
 
 const HomePage = () => {
   const [error, setError] = useState('');
@@ -46,7 +46,7 @@ const HomePage = () => {
     <div className="homepage">
       <div className="welcome-section">
         <h1>Welcome to <span className='redText'>DH<span className='greyTextHero'>BW</span></span>-AppStore</h1>
-        <p>Empowering You with Effortless Cloud Application Management</p>
+        <p>Empowering You with Effortless Cloud Applications Management</p>
       </div>
 
       {error && <div className="error-message">{error}</div>}
