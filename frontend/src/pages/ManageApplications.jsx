@@ -19,7 +19,7 @@ const ManageApplications = () => {
           </Link>
         </div>
         <div className="box">
-          <Link to="/my-apps" className="link">
+          <Link to={`/my-apps/${userId}`} className="link">
             <img src={myAppsIcon} alt="My Apps Icon" className="icon" />
             <div className="text">My Apps</div>
           </Link>

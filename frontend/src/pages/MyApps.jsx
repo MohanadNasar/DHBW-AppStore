@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useParams } from 'react-router-dom';
 import '../styles/ViewApp.css';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://dhbw-appstore.com';
 
 const MyApps = () => {
+  const { userId } = useParams();
   const [installedApps, setInstalledApps] = useState([]);
   const [deleteAppId, setDeleteAppId] = useState(null);
   const [error, setError] = useState('');
-  const userId = localStorage.getItem('userId');
   
   useEffect(() => {
     const fetchInstalledApps = async () => {
