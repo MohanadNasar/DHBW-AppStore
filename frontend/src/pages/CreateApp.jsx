@@ -3,7 +3,7 @@ import axios from 'axios';
 import { displaySuccessMessage, displayErrorMessage } from '../utils/messages'; 
 import '../styles/CreateApp.css';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://dhbw-appstore.com:8000';
+const API_URL = process.env.REACT_APP_API_URL || 'http://dhbw-appstore.com';
 
 const CreateApp = () => {
   const [name, setName] = useState('');

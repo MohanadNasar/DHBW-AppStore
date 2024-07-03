@@ -4,7 +4,7 @@ import '../styles/ViewApp.css';
 import { displaySuccessMessage } from '../utils/messages';
 import { Link } from 'react-router-dom';
 
-const API_URL = process.env.REACT_APP_API_URL ;
+const API_URL = process.env.REACT_APP_API_URL || 'http://dhbw-appstore.com';
 
 const ViewApp = () => {
   const [apps, setApps] = useState([]);

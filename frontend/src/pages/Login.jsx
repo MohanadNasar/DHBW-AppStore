@@ -4,7 +4,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { displaySuccessMessage } from '../utils/messages';
 import '../styles/Register.css'; // Reuse the CSS file for styling
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://dhbw-appstore.com:8000';
+const API_URL = process.env.REACT_APP_API_URL || 'http://dhbw-appstore.com';
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -21,7 +21,7 @@ const Login = () => {
   const loginHandler = async (e) => {
     e.preventDefault();
     try {
-      const { data } = await axios.post(`${API_URL}/users/login`, { username, password });
+      const { data } = await axios.post(`${API_URL}/users/login`, { username, password }, { withCredentials: true });
       const { token, user } = data;
       localStorage.setItem('token', token);
       localStorage.setItem('userInfo', JSON.stringify(user));

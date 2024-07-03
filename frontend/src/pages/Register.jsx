@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { displaySuccessMessage } from '../utils/messages';
 import '../styles/Register.css'; // Import the CSS file
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://dhbw-appstore.com:8000';
+const API_URL = process.env.REACT_APP_API_URL || 'http://dhbw-appstore.com';
 
 const Register = () => {
   const [username, setUsername] = useState('');

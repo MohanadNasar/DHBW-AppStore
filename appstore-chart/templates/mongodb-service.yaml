@@ -3,11 +3,11 @@ kind: Service
 metadata:
   name: mongodb-service
   labels:
-    app.kubernetes.io/managed-by: Helm   # Add this label
-    app.kubernetes.io/name: mongodb     # Example label for app name
+    app.kubernetes.io/managed-by: Helm   
+    app.kubernetes.io/name: mongodb     
   annotations:
-    meta.helm.sh/release-name: appstore-chart        # Add release name annotation
-    meta.helm.sh/release-namespace: default         # Add release namespace annotation
+    meta.helm.sh/release-name: appstore-chart        
+    meta.helm.sh/release-namespace: default         
 spec:
   selector:
     app: mongodb

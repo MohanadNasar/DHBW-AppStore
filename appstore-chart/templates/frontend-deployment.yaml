@@ -21,9 +21,9 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: mohanadnassar/frontend:2024-07-03
+          image: mohanadnassar/frontend:2024-07-03.08
           env:
             - name: REACT_APP_BACKEND_URL
-              value: "http://dhbw-appstore.com:8000"
+              value: "http://dhbw-appstore.com"
           ports:
             - containerPort: 80

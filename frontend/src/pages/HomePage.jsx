@@ -6,7 +6,7 @@ import manageAppStore_icon from '../assets/manageAppstore.jpg';
 import manageApplications_icon from '../assets/ManageApplications.jpg';
 import { displaySuccessMessage } from '../utils/messages';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://dhbw-appstore.com:8000';
+const API_URL = process.env.REACT_APP_API_URL || 'http://dhbw-appstore.com';
 
 const HomePage = () => {
   const [error, setError] = useState('');
@@ -34,7 +34,6 @@ const HomePage = () => {
     };
   
     const code = extractCodeFromUrl();
-    console.log('Received code:', code);
     if (code) {
       handleOAuthResponse(code);
     }

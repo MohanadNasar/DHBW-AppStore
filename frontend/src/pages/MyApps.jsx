@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../styles/ViewApp.css';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://dhbw-appstore.com:8000';
+const API_URL = process.env.REACT_APP_API_URL || 'http://dhbw-appstore.com';
 
 const MyApps = () => {
   const [installedApps, setInstalledApps] = useState([]);
