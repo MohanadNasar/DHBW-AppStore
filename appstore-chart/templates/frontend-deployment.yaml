@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: mohanadnassar/frontend:2024-07-03.08
+          image: mohanadnassar/frontend:2024-07-04.02
           env:
             - name: REACT_APP_BACKEND_URL
               value: "http://dhbw-appstore.com"

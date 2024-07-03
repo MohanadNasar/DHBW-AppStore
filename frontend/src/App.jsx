@@ -30,7 +30,7 @@ const App = () => {
           <Route path="/apps/:appId/versions" element={<VersionsPage />} />
           <Route path="/manage-applications" element={<ManageApplications />} />
           <Route path="/install-app/:userId" element={<InstallAppPage />} />
-          <Route path="/my-apps" element={<MyApps />} />
+          <Route path="/my-apps/:userId" element={<MyApps />} />
         </Routes>
       </div>
     </Router>

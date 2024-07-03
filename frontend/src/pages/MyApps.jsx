@@ -12,6 +12,7 @@ const MyApps = () => {
   const [error, setError] = useState('');
   
   useEffect(() => {
+    
     const fetchInstalledApps = async () => {
       try {
         const response = await axios.get(`${API_URL}/users/${userId}/apps`);
