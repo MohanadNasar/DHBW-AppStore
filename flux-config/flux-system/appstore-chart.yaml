@@ -1,0 +1,48 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: appstore-chart
+  namespace: default  # Ensure it deploys to the correct namespace
+spec:
+  interval: 5m0s  # Sync interval
+  chart:
+    spec:
+      chart: ./appstore-chart  # Path to your Helm chart relative to the repository root
+      sourceRef:
+        kind: GitRepository
+        name: dhbw-appstore
+        namespace: flux-system  # Reference the flux-system namespace where GitRepository is defined
+  values:
+    replicaCount: 1
+    backend:
+      image:
+        repository: mohanadnassar/backend
+        tag: "2024-07-02.2"
+        pullPolicy: IfNotPresent
+      service:
+        type: ClusterIP
+        port: 8000
+    frontend:
+      image:
+        repository: mohanadnassar/frontend
+        tag: "2024-07-04.02"
+        pullPolicy: IfNotPresent
+      service:
+        type: ClusterIP
+        port: 80
+    ingress:
+      enabled: true
+      host: dhbw-appstore.com
+      paths:
+        - path: /
+          backend: frontend-service
+          port: 80
+        - path: /apps
+          backend: backend-service
+          port: 8000
+        - path: /users
+          backend: backend-service
+          port: 8000
+        - path: /auth
+          backend: backend-service
+          port: 8000
