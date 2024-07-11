@@ -1,4 +1,3 @@
-# ingress.yaml
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -13,7 +12,7 @@ metadata:
     meta.helm.sh/release-namespace: default
 spec:
   rules:
-  - host: dhbw-appstore.com
+  - host: {{ .Values.ingress.host }}
     http:
       paths:
       - path: /
@@ -22,26 +21,26 @@ spec:
           service:
             name: frontend-service
             port:
-              number: 80
+              number: {{ .Values.frontend.service.port }}
       - path: /apps
         pathType: Prefix
         backend:
           service:
             name: backend-service
             port:
-              number: 8000
+              number: {{ .Values.backend.service.port }}
       - path: /users
         pathType: Prefix
         backend:
           service:
             name: backend-service
             port:
-              number: 8000
+              number: {{ .Values.backend.service.port }}
       - path: /auth
         pathType: Prefix
         backend:
           service:
             name: backend-service
             port:
-              number: 8000
+              number: {{ .Values.backend.service.port }}
   tls: []

@@ -1,4 +1,3 @@
-# backend-service.yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -14,6 +13,6 @@ spec:
     app: backend
   ports:
     - protocol: TCP
-      port: 8000
-      targetPort: 8000
-  type: ClusterIP
+      port: {{ .Values.backend.service.port }}
+      targetPort: {{ .Values.backend.service.port }}
+  type: {{ .Values.backend.service.type }}

@@ -1,4 +1,3 @@
-# frontend-service.yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -14,6 +13,6 @@ spec:
     app: frontend
   ports:
     - protocol: TCP
-      port: 80
-      targetPort: 80
-  type: ClusterIP
+      port: {{ .Values.frontend.service.port }}
+      targetPort: {{ .Values.frontend.service.port }}
+  type: {{ .Values.frontend.service.type }}
