@@ -1,6 +1,11 @@
 //userController.js
 const User = require('../Models/User');
 const App = require('../Models/App');
+const k8s = require('@kubernetes/client-node');
+const fs = require('fs');
+const path = require('path');
+const yaml = require('js-yaml');
+
 
 //Register a new user
 const registerUser = async (req, res) => {
@@ -36,7 +41,29 @@ const loginUser = async (req, res) => {
 };
 
 
-// Install a specific version of an app
+// Function to apply Kubernetes manifests
+const applyK8sManifests = async (manifests) => {
+    const kc = new k8s.KubeConfig();
+    kc.loadFromDefault();
+    const k8sApi = kc.makeApiClient(k8s.AppsV1Api);
+
+    for (const manifest of manifests) {
+        if (manifest.kind === 'Deployment') {
+            await k8sApi.createNamespacedDeployment('default', manifest);
+        }
+        // Handle other Kubernetes resources like Service, Ingress, etc.
+        // You might need to add other API clients like k8s.CoreV1Api for Service
+    }
+};
+
+// Function to replace placeholders in manifests with actual parameters
+const replacePlaceholders = (manifest, parameters) => {
+    const manifestStr = JSON.stringify(manifest);
+    const replacedStr = manifestStr.replace(/{{\s*([^}]+)\s*}}/g, (match, p1) => parameters[p1.trim()] || match);
+    return JSON.parse(replacedStr);
+};
+
+// Modify the installAppVersion function to apply Kubernetes manifests
 const installAppVersion = async (req, res) => {
     const { userId, appId } = req.params;
     const { version, parameters } = req.body;
@@ -76,21 +103,22 @@ const installAppVersion = async (req, res) => {
             if (!(param.name in parameters)) {
                 return res.status(400).json({ message: `Missing required parameter: ${param.name}` });
             }
-            if (param.value !== parameters[param.name]) {
-                return res.status(400).json({ message: `Invalid value for parameter: ${param.name}` });
-            }
-        }
-
-        // Validate optional parameters (optional parameters can be omitted)
-        for (let param of appVersion.optionalParams) {
-            if (param.name in parameters && param.value !== parameters[param.name]) {
-                return res.status(400).json({ message: `Invalid value for optional parameter: ${param.name}` });
-            }
         }
 
         // Add the app version to the user's installed apps
         user.installedApps.push({ appId, version, parameters });
         await user.save();
+
+        // Load the component descriptor and extract manifests
+        const descriptorPath = path.join(__dirname, `../descriptors/${app.name}/${version}/component-descriptor.yaml`);
+        const descriptor = fs.readFileSync(descriptorPath, 'utf8');
+        const componentDescriptor = yaml.load(descriptor);
+
+        // Inject parameters into manifests
+        const manifests = componentDescriptor.spec.deployment.manifests.map(manifest => replacePlaceholders(manifest, parameters));
+
+        // Apply Kubernetes manifests
+        await applyK8sManifests(manifests);
 
         res.status(201).json(user);
     } catch (error) {

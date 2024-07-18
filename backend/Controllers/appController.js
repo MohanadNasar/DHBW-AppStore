@@ -1,3 +1,5 @@
+const fs = require('fs');
+const path = require('path');
 const App = require('../Models/App');
 
 const getApps = async (req, res) => {
@@ -9,11 +11,67 @@ const getApps = async (req, res) => {
     }
 };
 
+// Function to generate component descriptor
+const generateComponentDescriptor = (app, version, requiredParams, optionalParams, imagePath) => {
+    return `
+apiVersion: ocm.software/v1
+kind: ComponentDescriptor
+metadata:
+  name: ${app.name}
+  version: ${version}
+  provider: ${app.provider || 'unknown'}
+spec:
+  resources:
+    - name: app-image
+      type: ociImage
+      relation: external
+      access:
+        type: ociRegistry
+        image: ${imagePath || `docker.io/${app.name}:${version}`}
+  configuration:
+    required: ${JSON.stringify(requiredParams, null, 2)}
+    optional: ${JSON.stringify(optionalParams, null, 2)}
+  deployment:
+    manifests:
+      - apiVersion: apps/v1
+        kind: Deployment
+        metadata:
+          name: ${app.name}-${version}
+          labels:
+            app: ${app.name}
+            version: ${version}
+        spec:
+          replicas: ${requiredParams.replicas || 1}
+          selector:
+            matchLabels:
+              app: ${app.name}
+          template:
+            metadata:
+              labels:
+                app: ${app.name}
+            spec:
+              containers:
+                - name: ${app.name}
+                  image: ${imagePath || `docker.io/${app.name}:${version}`}
+                  ports:
+                    - containerPort: ${optionalParams.port || 80}
+                  env:
+                    ${optionalParams.env ? Object.keys(optionalParams.env).map(key => ({ name: key, value: optionalParams.env[key] })) : []}
+    `;
+};
 
+
+// Function to save component descriptor to a file
+const saveComponentDescriptor = async (app, version, descriptor) => {
+    const dirPath = path.join(__dirname, `../descriptors/${app.name}/${version}`);
+    await fs.promises.mkdir(dirPath, { recursive: true });
+    const filePath = path.join(dirPath, 'component-descriptor.yaml');
+    await fs.promises.writeFile(filePath, descriptor);
+};
 
 // Create a new app with an initial version
 const createApp = async (req, res) => {
-    const { name, description } = req.body;
+    const { name, description, provider } = req.body;
     try {
         // Check if the app name already exists
         const existingApp = await App.findOne({ name });
@@ -24,6 +82,7 @@ const createApp = async (req, res) => {
         const newApp = new App({
             name,
             description,
+            provider,
             versions: [
                 {
                     version: '1.0.0',
@@ -35,6 +94,11 @@ const createApp = async (req, res) => {
             ]
         });
         await newApp.save();
+
+        // Generate and save the initial component descriptor
+        const descriptor = generateComponentDescriptor(newApp, '1.0.0', [], [], '');
+        await saveComponentDescriptor(newApp, '1.0.0', descriptor);
+
         res.status(201).json(newApp);
     } catch (error) {
         res.status(400).json({ error: error.message });
@@ -44,7 +108,7 @@ const createApp = async (req, res) => {
 // Add a new app version to an existing app
 const addAppVersion = async (req, res) => {
     const { appId } = req.params;
-    const { version, requiredParams, optionalParams } = req.body;
+    const { version, requiredParams, optionalParams, imagePath } = req.body;
     try {
         const app = await App.findById(appId);
         if (!app) {
@@ -65,12 +129,16 @@ const addAppVersion = async (req, res) => {
             createdAt: new Date(),
         });
         await app.save();
+
+        // Generate and save the component descriptor
+        const descriptor = generateComponentDescriptor(app, version, requiredParams, optionalParams, imagePath);
+        await saveComponentDescriptor(app, version, descriptor);
+
         res.status(201).json(app);
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
 };
-
 
 // Get all app versions of an app
 const getAppVersions = async (req, res) => {
@@ -106,6 +174,11 @@ const editAppVersion = async (req, res) => {
         appVersion.requiredParams = requiredParams || appVersion.requiredParams;
         appVersion.optionalParams = optionalParams || appVersion.optionalParams;
         await app.save();
+
+        // Generate and save the updated component descriptor
+        const descriptor = generateComponentDescriptor(app, appVersion.version, appVersion.requiredParams, appVersion.optionalParams);
+        await saveComponentDescriptor(app, appVersion.version, descriptor);
+
         res.status(200).json(appVersion);
     } catch (error) {
         res.status(400).json({ error: error.message });
