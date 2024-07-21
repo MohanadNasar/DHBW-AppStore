@@ -235,7 +235,7 @@ const deleteAppVersion = async (req, res) => {
         await app.save();
         res.status(200).json({ message: 'App version deleted successfully' });
     } catch (error) {
-        res.status{ 400}.json({ error: error.message });
+        res.status(400).json({ error: error.message });
     }
 };
 
