@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const ParameterSchema = new mongoose.Schema({
     name: { type: String, required: true },
     type: { type: String, enum: ['int', 'string', 'yaml', 'json'], required: true },
+    value: { type: mongoose.Schema.Types.Mixed },
 });
 
 const AppVersionSchema = new mongoose.Schema({
