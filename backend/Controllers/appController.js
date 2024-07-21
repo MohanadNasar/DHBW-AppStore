@@ -86,13 +86,6 @@ const generateComponentDescriptor = (app, version, requiredParams, optionalParam
 };
 
 
-// Function to save component descriptor to a file
-const saveComponentDescriptor = async (app, version, descriptor) => {
-    const dirPath = path.join(__dirname, `../descriptors/${app.name}/${version}`);
-    await fs.promises.mkdir(dirPath, { recursive: true });
-    const filePath = path.join(dirPath, 'component-descriptor.yaml');
-    await fs.promises.writeFile(filePath, descriptor);
-};
 
 // Create a new app with an initial version
 const createApp = async (req, res) => {
@@ -103,6 +96,9 @@ const createApp = async (req, res) => {
         if (existingApp) {
             return res.status(400).json({ message: 'App already exists' });
         }
+
+        const descriptor = generateComponentDescriptor(newApp, '1.0.0', [], [], '');
+
 
         const newApp = new App({
             name,
@@ -115,14 +111,13 @@ const createApp = async (req, res) => {
                     optionalParams: [],
                     enabled: true,
                     createdAt: new Date(),
+                    componentDescriptor: descriptor
                 }
             ]
         });
         await newApp.save();
 
         // Generate and save the initial component descriptor
-        const descriptor = generateComponentDescriptor(newApp, '1.0.0', [], [], '');
-        await saveComponentDescriptor(newApp, '1.0.0', descriptor);
 
         res.status(201).json(newApp);
     } catch (error) {

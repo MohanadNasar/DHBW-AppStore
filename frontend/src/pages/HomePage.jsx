@@ -44,7 +44,7 @@ const HomePage = () => {
   return (
     <div className="homepage">
       <div className="welcome-section">
-        <h1>Welcome to <span className='redText'>DH<span className='greyTextHero'>BW</span></span>-AppStore.</h1>
+        <h1>Welcome to <span className='redText'>DH<span className='greyTextHero'>BW</span></span>-AppStore !!</h1>
         <p>Empowering You with Effortless Cloud Applications Management.</p>
       </div>
 
