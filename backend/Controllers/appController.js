@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const yaml = require('js-yaml');
 const App = require('../Models/App');
 
 const getApps = async (req, res) => {
@@ -85,8 +86,6 @@ const generateComponentDescriptor = (app, version, requiredParams, optionalParam
     });
 };
 
-
-
 // Create a new app with an initial version
 const createApp = async (req, res) => {
     const { name, description, provider } = req.body;
@@ -96,9 +95,6 @@ const createApp = async (req, res) => {
         if (existingApp) {
             return res.status(400).json({ message: 'App already exists' });
         }
-
-        const descriptor = generateComponentDescriptor(newApp, '1.0.0', [], [], '');
-
 
         const newApp = new App({
             name,
@@ -110,14 +106,16 @@ const createApp = async (req, res) => {
                     requiredParams: [],
                     optionalParams: [],
                     enabled: true,
-                    createdAt: new Date(),
-                    componentDescriptor: descriptor
+                    createdAt: new Date()
                 }
             ]
         });
-        await newApp.save();
 
-        // Generate and save the initial component descriptor
+        const descriptor = generateComponentDescriptor(newApp, '1.0.0', [], [], '');
+
+        newApp.versions[0].componentDescriptor = descriptor;
+
+        await newApp.save();
 
         res.status(201).json(newApp);
     } catch (error) {
@@ -192,11 +190,12 @@ const editAppVersion = async (req, res) => {
         appVersion.version = version || appVersion.version;
         appVersion.requiredParams = requiredParams || appVersion.requiredParams;
         appVersion.optionalParams = optionalParams || appVersion.optionalParams;
-        await app.save();
 
         // Generate and save the updated component descriptor
         const descriptor = generateComponentDescriptor(app, appVersion.version, appVersion.requiredParams, appVersion.optionalParams);
-        await saveComponentDescriptor(app, appVersion.version, descriptor);
+        appVersion.componentDescriptor = descriptor;
+
+        await app.save();
 
         res.status(200).json(appVersion);
     } catch (error) {
@@ -236,7 +235,7 @@ const deleteAppVersion = async (req, res) => {
         await app.save();
         res.status(200).json({ message: 'App version deleted successfully' });
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        res.status{ 400}.json({ error: error.message });
     }
 };
 
