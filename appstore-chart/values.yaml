@@ -5,7 +5,7 @@ replicaCount: 1
 backend:
   image:
     repository: mohanadnassar/backend
-    tag: "2024-07-02.2"
+    tag: "2024-07-19"
     pullPolicy: IfNotPresent
   service:
     type: ClusterIP
@@ -14,7 +14,7 @@ backend:
 frontend:
   image:
     repository: mohanadnassar/frontend
-    tag: "2024-07-04.02"
+    tag: "2024-07-19.02"
     pullPolicy: IfNotPresent
   service:
     type: ClusterIP
