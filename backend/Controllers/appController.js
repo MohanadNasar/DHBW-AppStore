@@ -13,51 +13,76 @@ const getApps = async (req, res) => {
 
 // Function to generate component descriptor
 const generateComponentDescriptor = (app, version, requiredParams, optionalParams, imagePath) => {
-    return `
-apiVersion: ocm.software/v1
-kind: ComponentDescriptor
-metadata:
-  name: ${app.name}
-  version: ${version}
-  provider: ${app.provider || 'unknown'}
-spec:
-  resources:
-    - name: app-image
-      type: ociImage
-      relation: external
-      access:
-        type: ociRegistry
-        image: ${imagePath || `docker.io/${app.name}:${version}`}
-  configuration:
-    required: ${JSON.stringify(requiredParams, null, 2)}
-    optional: ${JSON.stringify(optionalParams, null, 2)}
-  deployment:
-    manifests:
-      - apiVersion: apps/v1
-        kind: Deployment
-        metadata:
-          name: ${app.name}-${version}
-          labels:
-            app: ${app.name}
-            version: ${version}
-        spec:
-          replicas: ${requiredParams.replicas || 1}
-          selector:
-            matchLabels:
-              app: ${app.name}
-          template:
-            metadata:
-              labels:
-                app: ${app.name}
-            spec:
-              containers:
-                - name: ${app.name}
-                  image: ${imagePath || `docker.io/${app.name}:${version}`}
-                  ports:
-                    - containerPort: ${optionalParams.port || 80}
-                  env:
-                    ${optionalParams.env ? Object.keys(optionalParams.env).map(key => ({ name: key, value: optionalParams.env[key] })) : []}
-    `;
+    return yaml.dump({
+        apiVersion: 'ocm.software/v1',
+        kind: 'ComponentDescriptor',
+        metadata: {
+            name: app.name,
+            version: version,
+            provider: app.provider || 'unknown'
+        },
+        spec: {
+            resources: [
+                {
+                    name: 'app-image',
+                    type: 'ociImage',
+                    relation: 'external',
+                    access: {
+                        type: 'ociRegistry',
+                        image: imagePath || `docker.io/${app.name}:${version}`
+                    }
+                }
+            ],
+            configuration: {
+                required: requiredParams,
+                optional: optionalParams
+            },
+            deployment: {
+                manifests: [
+                    {
+                        apiVersion: 'apps/v1',
+                        kind: 'Deployment',
+                        metadata: {
+                            name: `${app.name}-${version}`,
+                            labels: {
+                                app: app.name,
+                                version: version
+                            }
+                        },
+                        spec: {
+                            replicas: requiredParams.find(param => param.name === 'replicas')?.value || 1,
+                            selector: {
+                                matchLabels: {
+                                    app: app.name
+                                }
+                            },
+                            template: {
+                                metadata: {
+                                    labels: {
+                                        app: app.name
+                                    }
+                                },
+                                spec: {
+                                    containers: [
+                                        {
+                                            name: app.name,
+                                            image: imagePath || `docker.io/${app.name}:${version}`,
+                                            ports: [
+                                                {
+                                                    containerPort: optionalParams.find(param => param.name === 'port')?.value || 80
+                                                }
+                                            ],
+                                            env: optionalParams.find(param => param.name === 'env')?.value || []
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                ]
+            }
+        }
+    });
 };
 
 
@@ -105,7 +130,7 @@ const createApp = async (req, res) => {
     }
 };
 
-// Add a new app version to an existing app
+// Update addAppVersion to save the descriptor in the database
 const addAppVersion = async (req, res) => {
     const { appId } = req.params;
     const { version, requiredParams, optionalParams, imagePath } = req.body;
@@ -121,18 +146,17 @@ const addAppVersion = async (req, res) => {
             return res.status(400).json({ message: 'Version already exists' });
         }
 
+        const descriptor = generateComponentDescriptor(app, version, requiredParams, optionalParams, imagePath);
+
         app.versions.push({
             version,
             requiredParams,
             optionalParams,
             enabled: true,
             createdAt: new Date(),
+            componentDescriptor: descriptor // Store descriptor in the database
         });
         await app.save();
-
-        // Generate and save the component descriptor
-        const descriptor = generateComponentDescriptor(app, version, requiredParams, optionalParams, imagePath);
-        await saveComponentDescriptor(app, version, descriptor);
 
         res.status(201).json(app);
     } catch (error) {

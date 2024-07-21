@@ -63,37 +63,31 @@ const replacePlaceholders = (manifest, parameters) => {
     return JSON.parse(replacedStr);
 };
 
-// Modify the installAppVersion function to apply Kubernetes manifests
 const installAppVersion = async (req, res) => {
     const { userId, appId } = req.params;
     const { version, parameters } = req.body;
 
     try {
-        // Find the user
         const user = await User.findById(userId);
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        // Find the app
         const app = await App.findById(appId);
         if (!app) {
             return res.status(404).json({ message: 'App not found' });
         }
 
-        // Check if the app version is already installed for the user
         const alreadyInstalled = user.installedApps.some(installedApp => installedApp.appId.toString() === appId && installedApp.version === version);
         if (alreadyInstalled) {
-            return res.status(400).json({ message: 'You have already Installed this app version' });
+            return res.status(400).json({ message: 'You have already installed this app version' });
         }
 
-        // Find the specific version of the app
         const appVersion = app.versions.find(v => v.version === version);
         if (!appVersion) {
             return res.status(404).json({ message: 'App version not found' });
         }
 
-        // Check if the version is enabled
         if (!appVersion.enabled) {
             return res.status(400).json({ message: 'This app version is disabled and cannot be installed.' });
         }
@@ -109,10 +103,8 @@ const installAppVersion = async (req, res) => {
         user.installedApps.push({ appId, version, parameters });
         await user.save();
 
-        // Load the component descriptor and extract manifests
-        const descriptorPath = path.join(__dirname, `../descriptors/${app.name}/${version}/component-descriptor.yaml`);
-        const descriptor = fs.readFileSync(descriptorPath, 'utf8');
-        const componentDescriptor = yaml.load(descriptor);
+        // Retrieve the component descriptor from the database
+        const componentDescriptor = yaml.load(appVersion.componentDescriptor);
 
         // Inject parameters into manifests
         const manifests = componentDescriptor.spec.deployment.manifests.map(manifest => replacePlaceholders(manifest, parameters));
@@ -125,6 +117,7 @@ const installAppVersion = async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 };
+
 
 
 

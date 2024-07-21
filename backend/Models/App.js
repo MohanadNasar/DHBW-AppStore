@@ -12,8 +12,10 @@ const AppVersionSchema = new mongoose.Schema({
     requiredParams: [ParameterSchema], // Required parameters for this version
     optionalParams: [ParameterSchema], // Optional parameters for this version
     enabled: { type: Boolean, default: true },
-    createdAt: { type: Date, default: Date.now }
+    createdAt: { type: Date, default: Date.now },
+    componentDescriptor: { type: String } // Add this field to store the component descriptor
 });
+
 
 const AppSchema = new mongoose.Schema({
     name: { type: String, required: true, unique: true },
