@@ -3,6 +3,8 @@ kind: HelmRelease
 metadata:
   name: appstore-chart
   namespace: default  # Ensure it deploys to the correct namespace
+  annotations:
+    fluxcd.io/ignore: "false"
 spec:
   interval: 5m0s  # Sync interval
   chart:
@@ -13,6 +15,10 @@ spec:
         name: dhbw-appstore
         namespace: flux-system  # Reference the flux-system namespace where GitRepository is defined
   values:
+    serviceAccount:
+      create: true
+      automount: true
+      name: "app-deployer"
     replicaCount: 1
     backend:
       image:
