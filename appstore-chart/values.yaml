@@ -48,4 +48,4 @@ serviceAccount:
   create: true
   automount: true
   annotations: {}
-  name: ""  
+  name: "app-deployer"  

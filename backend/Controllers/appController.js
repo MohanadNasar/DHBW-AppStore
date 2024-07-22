@@ -12,13 +12,14 @@ const getApps = async (req, res) => {
     }
 };
 
-// Function to generate component descriptor
 const generateComponentDescriptor = (app, version, requiredParams, optionalParams, imagePath) => {
+    const appNameLowerCase = app.name.toLowerCase();
+
     return yaml.dump({
         apiVersion: 'ocm.software/v1',
         kind: 'ComponentDescriptor',
         metadata: {
-            name: app.name,
+            name: appNameLowerCase,
             version: version,
             provider: app.provider || 'unknown'
         },
@@ -44,9 +45,9 @@ const generateComponentDescriptor = (app, version, requiredParams, optionalParam
                         apiVersion: 'apps/v1',
                         kind: 'Deployment',
                         metadata: {
-                            name: `${app.name}-${version}`,
+                            name: `${appNameLowerCase}-${version.replace(/\./g, '-')}`,
                             labels: {
-                                app: app.name,
+                                app: appNameLowerCase,
                                 version: version
                             }
                         },
@@ -54,19 +55,19 @@ const generateComponentDescriptor = (app, version, requiredParams, optionalParam
                             replicas: requiredParams.find(param => param.name === 'replicas')?.value || 1,
                             selector: {
                                 matchLabels: {
-                                    app: app.name
+                                    app: appNameLowerCase
                                 }
                             },
                             template: {
                                 metadata: {
                                     labels: {
-                                        app: app.name
+                                        app: appNameLowerCase
                                     }
                                 },
                                 spec: {
                                     containers: [
                                         {
-                                            name: app.name,
+                                            name: appNameLowerCase,
                                             image: imagePath || `docker.io/${app.name}:${version}`,
                                             ports: [
                                                 {
@@ -85,6 +86,7 @@ const generateComponentDescriptor = (app, version, requiredParams, optionalParam
         }
     });
 };
+
 
 // Create a new app with an initial version
 const createApp = async (req, res) => {

@@ -19,6 +19,7 @@ spec:
       labels:
         app: backend
     spec:
+      serviceAccountName: {{ include "appstore-chart.serviceAccountName" . }}
       containers:
         - name: backend
           image: {{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}
