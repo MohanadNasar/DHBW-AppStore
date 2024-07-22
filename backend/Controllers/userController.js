@@ -44,22 +44,18 @@ const loginUser = async (req, res) => {
 // Function to apply Kubernetes manifests
 const applyK8sManifests = async (manifests) => {
     const kc = new k8s.KubeConfig();
-    kc.loadFromDefault();
+    kc.loadFromCluster();
     const k8sApi = kc.makeApiClient(k8s.AppsV1Api);
-    const coreV1Api = kc.makeApiClient(k8s.CoreV1Api);
 
     for (const manifest of manifests) {
-        console.log(`Applying manifest: ${JSON.stringify(manifest)}`);
         try {
             if (manifest.kind === 'Deployment') {
                 await k8sApi.createNamespacedDeployment('default', manifest);
-            } else if (manifest.kind === 'Service') {
-                await coreV1Api.createNamespacedService('default', manifest);
             }
-            // Handle other Kubernetes resources like Ingress, etc.
+            // Handle other Kubernetes resources like Service, Ingress, etc.
+            // You might need to add other API clients like k8s.CoreV1Api for Service
         } catch (error) {
-            console.error(`Error applying manifest: ${error.message}`, manifest);
-            throw error;
+            console.error(`Error applying manifest: ${manifest.kind} ${manifest.metadata.name}`, error.body);
         }
     }
 };
