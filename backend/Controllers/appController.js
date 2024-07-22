@@ -45,7 +45,7 @@ const generateComponentDescriptor = (app, version, requiredParams, optionalParam
                         apiVersion: 'apps/v1',
                         kind: 'Deployment',
                         metadata: {
-                            name: `${appNameLowerCase}-${version.replace(/\./g, '-')}`,
+                            name: `${appNameLowerCase}`,
                             labels: {
                                 app: appNameLowerCase,
                                 version: version
@@ -86,6 +86,8 @@ const generateComponentDescriptor = (app, version, requiredParams, optionalParam
         }
     });
 };
+
+ccuy67-+
 
 
 // Create a new app with an initial version
