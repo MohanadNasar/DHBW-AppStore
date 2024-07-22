@@ -3,6 +3,11 @@ kind: ServiceAccount
 metadata:
   name: app-deployer
   namespace: default
+  labels:
+    app.kubernetes.io/managed-by: "Helm"
+  annotations:
+    meta.helm.sh/release-name: "appstore-chart"
+    meta.helm.sh/release-namespace: "default"
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
@@ -10,6 +15,11 @@ kind: Role
 metadata:
   namespace: default
   name: app-deployer-role
+  labels:
+    app.kubernetes.io/managed-by: "Helm"
+  annotations:
+    meta.helm.sh/release-name: "appstore-chart"
+    meta.helm.sh/release-namespace: "default"
 rules:
 - apiGroups: ["", "apps", "extensions"]
   resources: ["deployments", "services", "pods"]
@@ -21,6 +31,11 @@ kind: RoleBinding
 metadata:
   name: app-deployer-binding
   namespace: default
+  labels:
+    app.kubernetes.io/managed-by: "Helm"
+  annotations:
+    meta.helm.sh/release-name: "appstore-chart"
+    meta.helm.sh/release-namespace: "default"
 subjects:
 - kind: ServiceAccount
   name: app-deployer

@@ -47,5 +47,4 @@ autoscaling:
 serviceAccount:
   create: true
   automount: true
-  annotations: {}
   name: "app-deployer"  
