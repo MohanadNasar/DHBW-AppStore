@@ -87,7 +87,6 @@ const generateComponentDescriptor = (app, version, requiredParams, optionalParam
     });
 };
 
-ccuy67-+
 
 
 // Create a new app with an initial version
