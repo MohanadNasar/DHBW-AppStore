@@ -1,11 +1,11 @@
-#values.yaml 
+# values.yaml
 
 replicaCount: 1
 
 backend:
   image:
     repository: mohanadnassar/backend
-    tag: "2024-07-22.03"
+    tag: "2024-07-22.04"
     pullPolicy: IfNotPresent
   service:
     type: ClusterIP
@@ -42,9 +42,8 @@ autoscaling:
   minReplicas: 1
   maxReplicas: 100
   targetCPUUtilizationPercentage: 80
-  # targetMemoryUtilizationPercentage: 80
 
 serviceAccount:
   create: true
   automount: true
-  name: "app-deployer"  
+  name: "app-deployer"
