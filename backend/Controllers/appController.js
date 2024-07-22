@@ -13,7 +13,7 @@ const getApps = async (req, res) => {
 };
 
 const generateComponentDescriptor = (app, version, requiredParams, optionalParams, imagePath) => {
-    const appNameLowerCase = app.name.toLowerCase();
+    const appNameLowerCase = app.name.toLowerCase().replace(/[^a-z0-9-]/g, '');
 
     return yaml.dump({
         apiVersion: 'ocm.software/v1',
@@ -31,7 +31,7 @@ const generateComponentDescriptor = (app, version, requiredParams, optionalParam
                     relation: 'external',
                     access: {
                         type: 'ociRegistry',
-                        image: imagePath || `docker.io/${app.name}:${version}`
+                        image: imagePath || `docker.io/${appNameLowerCase}:${version}`
                     }
                 }
             ],
@@ -45,7 +45,7 @@ const generateComponentDescriptor = (app, version, requiredParams, optionalParam
                         apiVersion: 'apps/v1',
                         kind: 'Deployment',
                         metadata: {
-                            name: `${appNameLowerCase}`,
+                            name: `${appNameLowerCase}-${version.replace(/\./g, '-')}`,
                             labels: {
                                 app: appNameLowerCase,
                                 version: version
@@ -68,7 +68,7 @@ const generateComponentDescriptor = (app, version, requiredParams, optionalParam
                                     containers: [
                                         {
                                             name: appNameLowerCase,
-                                            image: imagePath || `docker.io/${app.name}:${version}`,
+                                            image: imagePath || `docker.io/${appNameLowerCase}:${version}`,
                                             ports: [
                                                 {
                                                     containerPort: optionalParams.find(param => param.name === 'port')?.value || 80
@@ -86,6 +86,7 @@ const generateComponentDescriptor = (app, version, requiredParams, optionalParam
         }
     });
 };
+
 
 
 
@@ -125,6 +126,7 @@ const createApp = async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 };
+
 
 // Update addAppVersion to save the descriptor in the database
 const addAppVersion = async (req, res) => {
