@@ -16,7 +16,7 @@ router.post('/:userId/apps/:appId', userController.installAppVersion);
 router.get('/:userId/apps', userController.listInstalledApps);
 
 // Uninstall an app
-router.delete('/:userId/apps/:appId', userController.uninstallApp);
+router.delete('/:userId/apps/:appId', userController.uninstallAppVersion);
 
 
 
