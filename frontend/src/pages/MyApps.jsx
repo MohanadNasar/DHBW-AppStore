@@ -9,10 +9,10 @@ const MyApps = () => {
   const { userId } = useParams();
   const [installedApps, setInstalledApps] = useState([]);
   const [deleteAppId, setDeleteAppId] = useState(null);
+  const [deleteAppVersion, setDeleteAppVersion] = useState(null); // State to store the app version to be deleted
   const [error, setError] = useState('');
   
   useEffect(() => {
-    
     const fetchInstalledApps = async () => {
       try {
         const response = await axios.get(`${API_URL}/users/${userId}/apps`);
@@ -26,9 +26,12 @@ const MyApps = () => {
 
   const uninstallApp = async () => {
     try {
-      await axios.delete(`${API_URL}/users/${userId}/apps/${deleteAppId}`);
-      setInstalledApps(prevApps => prevApps.filter(app => app.appId._id !== deleteAppId));
+      await axios.delete(`${API_URL}/users/${userId}/apps/${deleteAppId}`, {
+        data: { version: deleteAppVersion } // Pass the version in the request body
+      });
+      setInstalledApps(prevApps => prevApps.filter(app => !(app.appId._id === deleteAppId && app.version === deleteAppVersion)));
       setDeleteAppId(null);
+      setDeleteAppVersion(null);
       const modal = document.getElementById('confirmation-modal');
       if (modal) {
         modal.style.display = 'none';
@@ -38,8 +41,9 @@ const MyApps = () => {
     }
   };
 
-  const openConfirmationModal = (appId) => {
+  const openConfirmationModal = (appId, version) => {
     setDeleteAppId(appId);
+    setDeleteAppVersion(version); // Set the version to be deleted
     setTimeout(() => {
       const modal = document.getElementById('confirmation-modal');
       if (modal) {
@@ -50,6 +54,7 @@ const MyApps = () => {
 
   const closeConfirmationModal = () => {
     setDeleteAppId(null);
+    setDeleteAppVersion(null); // Clear the version
     const modal = document.getElementById('confirmation-modal');
     if (modal) {
       modal.style.display = 'none';
@@ -66,7 +71,7 @@ const MyApps = () => {
             <h3>{app.appId.name}</h3>
             <p>Version: {app.version}</p>
             <div className="app-actions">
-              <button className="delete-button" onClick={() => openConfirmationModal(app.appId._id)}>Uninstall</button>
+              <button className="delete-button" onClick={() => openConfirmationModal(app.appId._id, app.version)}>Uninstall</button>
             </div>
           </div>
         ))}
@@ -75,7 +80,7 @@ const MyApps = () => {
       {deleteAppId && (
         <div id="confirmation-modal" className="confirmation-modal">
           <div className="modal-content">
-            <p>Are you sure you want to uninstall this app?</p>
+            <p>Are you sure you want to uninstall this app version?</p>
             <div className="modal-buttons">
               <button className="yes-button" onClick={uninstallApp}>Yes</button>
               <button className="cancel-button" onClick={closeConfirmationModal}>Cancel</button>
