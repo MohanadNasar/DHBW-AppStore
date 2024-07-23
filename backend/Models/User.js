@@ -7,12 +7,13 @@ const UserSchema = new mongoose.Schema({
     username: { type: String, required: true, unique: true },
     email: { type: String, required: true, unique: true },
     password: { type: String },
-    githubId: { type: String, unique: true, sparse: true }, // Add GitHub ID field
+    githubId: { type: String, unique: true, sparse: true }, 
     installedApps: [
         {
             appId: { type: mongoose.Schema.Types.ObjectId, ref: 'App' },
             version: String,
-            parameters: Object
+            parameters: Object,
+            deploymentName: String
         }
     ]
 });

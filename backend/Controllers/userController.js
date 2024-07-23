@@ -103,10 +103,6 @@ const installAppVersion = async (req, res) => {
             }
         }
 
-        // Add the app version to the user's installed apps
-        user.installedApps.push({ appId, version, parameters });
-        await user.save();
-
         // Retrieve the component descriptor from the database
         const componentDescriptor = yaml.load(appVersion.componentDescriptor);
 
@@ -116,12 +112,20 @@ const installAppVersion = async (req, res) => {
         // Apply Kubernetes manifests
         await applyK8sManifests(manifests);
 
+        // Get the deployment name from the manifest
+        const deploymentName = manifests.find(manifest => manifest.kind === 'Deployment').metadata.name;
+
+        // Add the app version and deployment name to the user's installed apps
+        user.installedApps.push({ appId, version, parameters, deploymentName });
+        await user.save();
+
         res.status(201).json(user);
     } catch (error) {
         console.error('Error installing app version:', error);
         res.status(400).json({ error: error.message });
     }
 };
+
 
 
 
@@ -147,13 +151,30 @@ const uninstallApp = async (req, res) => {
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
+
+        const appToUninstall = user.installedApps.find(app => app.appId.toString() === appId);
+        if (!appToUninstall) {
+            return res.status(404).json({ message: 'App not installed' });
+        }
+
+        // Delete the Kubernetes deployment
+        const kc = new k8s.KubeConfig();
+        kc.loadFromCluster();
+        const k8sApi = kc.makeApiClient(k8s.AppsV1Api);
+
+        await k8sApi.deleteNamespacedDeployment(appToUninstall.deploymentName, 'default');
+
+        // Remove the app from the user's installed apps
         user.installedApps = user.installedApps.filter(app => app.appId.toString() !== appId);
         await user.save();
+
         res.status(200).json({ message: 'App uninstalled successfully' });
     } catch (error) {
+        console.error('Error uninstalling app:', error);
         res.status(400).json({ error: error.message });
     }
 };
+
 
 module.exports = {
     registerUser,
