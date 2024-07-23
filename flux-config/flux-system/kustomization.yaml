@@ -15,10 +15,17 @@ spec:
     - gotk-components.yaml
     - gotk-sync.yaml
   patches:
-    - patch: |
-        - op: add
-          path: /spec/pruneResources
-          value:
+    - target:
+        kind: Kustomization
+        name: flux-system
+      patch: |-
+        apiVersion: kustomize.toolkit.fluxcd.io/v1
+        kind: Kustomization
+        metadata:
+          name: flux-system
+          namespace: flux-system
+        spec:
+          pruneResources:
             - apiVersion: rbac.authorization.k8s.io/v1
               kind: Role
               name: app-deployer-role
@@ -27,6 +34,3 @@ spec:
               kind: RoleBinding
               name: app-deployer-binding
               namespace: default
-      target:
-        kind: Kustomization
-        name: flux-system
