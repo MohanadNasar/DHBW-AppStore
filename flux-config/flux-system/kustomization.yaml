@@ -1,5 +1,26 @@
-apiVersion: kustomize.config.k8s.io/v1beta1
+apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
-resources:
-- gotk-components.yaml
-- gotk-sync.yaml
+metadata:
+  name: flux-system
+  namespace: flux-system
+spec:
+  interval: 10m0s
+  path: ./flux-system
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: dhbw-appstore
+    namespace: flux-system
+  resources:
+    - gotk-components.yaml
+    - gotk-sync.yaml
+  # Exclude the Role and RoleBinding from being pruned
+  pruneResources:
+    - apiVersion: rbac.authorization.k8s.io/v1
+      kind: Role
+      name: app-deployer-role
+      namespace: default
+    - apiVersion: rbac.authorization.k8s.io/v1
+      kind: RoleBinding
+      name: app-deployer-binding
+      namespace: default
