@@ -1,3 +1,4 @@
+# flux-system/kustomization.yaml
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
@@ -14,23 +15,4 @@ spec:
   resources:
     - gotk-components.yaml
     - gotk-sync.yaml
-  patches:
-    - target:
-        kind: Kustomization
-        name: flux-system
-      patch: |-
-        apiVersion: kustomize.toolkit.fluxcd.io/v1
-        kind: Kustomization
-        metadata:
-          name: flux-system
-          namespace: flux-system
-        spec:
-          pruneResources:
-            - apiVersion: rbac.authorization.k8s.io/v1
-              kind: Role
-              name: app-deployer-role
-              namespace: default
-            - apiVersion: rbac.authorization.k8s.io/v1
-              kind: RoleBinding
-              name: app-deployer-binding
-              namespace: default
+    - appstore-chart.yaml  # Reference your HelmRelease
