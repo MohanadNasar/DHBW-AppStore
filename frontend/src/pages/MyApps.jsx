@@ -26,9 +26,7 @@ const MyApps = () => {
 
   const uninstallApp = async () => {
     try {
-      await axios.delete(`${API_URL}/users/${userId}/apps/${deleteAppId}`, {
-        data: { version: deleteAppVersion } // Pass the version in the request body
-      });
+      await axios.delete(`${API_URL}/users/${userId}/apps/${deleteAppId}`,  { version: deleteAppVersion});
       setInstalledApps(prevApps => prevApps.filter(app => !(app.appId._id === deleteAppId && app.version === deleteAppVersion)));
       setDeleteAppId(null);
       setDeleteAppVersion(null);

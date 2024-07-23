@@ -14,7 +14,7 @@ backend:
 frontend:
   image:
     repository: mohanadnassar/frontend
-    tag: "2024-07-23"
+    tag: "2024-07-23.02"
     pullPolicy: IfNotPresent
   service:
     type: ClusterIP
