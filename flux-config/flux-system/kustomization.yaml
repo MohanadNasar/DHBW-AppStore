@@ -14,13 +14,23 @@ spec:
   resources:
     - gotk-components.yaml
     - gotk-sync.yaml
-  # Exclude the Role and RoleBinding from being pruned
-  pruneResources:
-    - apiVersion: rbac.authorization.k8s.io/v1
-      kind: Role
-      name: app-deployer-role
-      namespace: default
-    - apiVersion: rbac.authorization.k8s.io/v1
-      kind: RoleBinding
-      name: app-deployer-binding
-      namespace: default
+  patchesStrategicMerge:
+    - |-
+      apiVersion: kustomize.toolkit.fluxcd.io/v1
+      kind: Kustomization
+      metadata:
+        name: flux-system
+      spec:
+        # Exclude the Role and RoleBinding from being pruned
+        prune: true
+        patches:
+          - patch: |
+              - apiVersion: rbac.authorization.k8s.io/v1
+                kind: Role
+                name: app-deployer-role
+                namespace: default
+          - patch: |
+              - apiVersion: rbac.authorization.k8s.io/v1
+                kind: RoleBinding
+                name: app-deployer-binding
+                namespace: default
