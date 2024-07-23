@@ -14,6 +14,7 @@ const getApps = async (req, res) => {
 
 const generateComponentDescriptor = (app, version, requiredParams, optionalParams, imagePath) => {
     const appNameLowerCase = app.name.toLowerCase().replace(/[^a-z0-9-]/g, '');
+    const replicasParam = requiredParams.find(param => param.name === 'replicas');
 
     return yaml.dump({
         apiVersion: 'ocm.software/v1',
@@ -52,7 +53,7 @@ const generateComponentDescriptor = (app, version, requiredParams, optionalParam
                             }
                         },
                         spec: {
-                            replicas: requiredParams.find(param => param.name === 'replicas')?.value || 1,
+                            replicas: replicasParam ? replicasParam.value : 1,
                             selector: {
                                 matchLabels: {
                                     app: appNameLowerCase
@@ -86,6 +87,7 @@ const generateComponentDescriptor = (app, version, requiredParams, optionalParam
         }
     });
 };
+
 
 
 
