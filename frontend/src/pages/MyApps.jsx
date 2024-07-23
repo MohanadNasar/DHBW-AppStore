@@ -11,7 +11,7 @@ const MyApps = () => {
   const [deleteAppId, setDeleteAppId] = useState(null);
   const [deleteAppVersion, setDeleteAppVersion] = useState(null); // State to store the app version to be deleted
   const [error, setError] = useState('');
-  
+
   useEffect(() => {
     const fetchInstalledApps = async () => {
       try {
@@ -26,7 +26,7 @@ const MyApps = () => {
 
   const uninstallApp = async () => {
     try {
-      await axios.delete(`${API_URL}/users/${userId}/apps/${deleteAppId}`,  { version: deleteAppVersion});
+      await axios.delete(`${API_URL}/users/${userId}/apps/${deleteAppId}/${deleteAppVersion}`);
       setInstalledApps(prevApps => prevApps.filter(app => !(app.appId._id === deleteAppId && app.version === deleteAppVersion)));
       setDeleteAppId(null);
       setDeleteAppVersion(null);

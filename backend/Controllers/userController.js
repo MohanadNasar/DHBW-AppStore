@@ -143,10 +143,8 @@ const listInstalledApps = async (req, res) => {
     }
 };
 
-// Uninstall an app
 const uninstallAppVersion = async (req, res) => {
-    const { userId, appId } = req.params;
-    const { version } = req.body; // Get version from the request body
+    const { userId, appId, version } = req.params; // Get version from the URL parameters
 
     try {
         const user = await User.findById(userId);

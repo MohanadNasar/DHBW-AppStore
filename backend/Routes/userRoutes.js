@@ -1,4 +1,3 @@
-//userRoutes.js
 const express = require('express');
 const router = express.Router();
 const userController = require('../Controllers/userController');
@@ -15,9 +14,7 @@ router.post('/:userId/apps/:appId', userController.installAppVersion);
 // List installed apps and their versions
 router.get('/:userId/apps', userController.listInstalledApps);
 
-// Uninstall an app
-router.delete('/:userId/apps/:appId', userController.uninstallAppVersion);
-
-
+// Uninstall an app version
+router.delete('/:userId/apps/:appId/:version', userController.uninstallAppVersion);
 
 module.exports = router;
