@@ -110,7 +110,10 @@ const installAppVersion = async (req, res) => {
         await user.save();
 
         // Retrieve the component descriptor from the database
-        const componentDescriptor = yaml.load(appVersion.componentDescriptor);
+        let componentDescriptor = yaml.load(appVersion.componentDescriptor);
+
+        // Update component descriptor with provided parameters
+        componentDescriptor = replacePlaceholders(componentDescriptor, parameters);
 
         // Inject parameters into manifests
         const manifests = componentDescriptor.spec.deployment.manifests.map(manifest => replacePlaceholders(manifest, parameters));
