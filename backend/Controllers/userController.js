@@ -59,16 +59,16 @@ const applyK8sManifests = async (manifests) => {
     }
 };
 
-// Function to replace placeholders in the component descriptor and manifests with actual parameters
-const replacePlaceholders = (obj, parameters) => {
+// Function to replace placeholders in the component descriptor and manifests with actual parameters from the user
+const replacePlaceholders = (obj, userParams) => {
     if (typeof obj === 'string') {
-        return obj.replace(/{{\s*([^}]+)\s*}}/g, (match, p1) => parameters[p1.trim()] || match);
+        return obj.replace(/{{\s*([^}]+)\s*}}/g, (match, p1) => userParams[p1.trim()] || match);
     } else if (Array.isArray(obj)) {
-        return obj.map(item => replacePlaceholders(item, parameters));
+        return obj.map(item => replacePlaceholders(item, userParams));
     } else if (typeof obj === 'object' && obj !== null) {
         const result = {};
         for (const key of Object.keys(obj)) {
-            result[key] = replacePlaceholders(obj[key], parameters);
+            result[key] = replacePlaceholders(obj[key], userParams);
         }
         return result;
     } else {
@@ -122,11 +122,12 @@ const installAppVersion = async (req, res) => {
         // Retrieve the component descriptor from the database
         let componentDescriptor = yaml.load(appVersion.componentDescriptor);
 
-        // Update component descriptor with provided parameters
-        componentDescriptor = replacePlaceholders(componentDescriptor, parameters);
+        // Update component descriptor with provided parameters from the user's installed app data
+        const userParams = user.installedApps.find(app => app.appId.toString() === appId && app.version === version).parameters;
+        componentDescriptor = replacePlaceholders(componentDescriptor, userParams);
 
         // Inject parameters into manifests
-        const manifests = componentDescriptor.spec.deployment.manifests.map(manifest => replacePlaceholders(manifest, parameters));
+        const manifests = componentDescriptor.spec.deployment.manifests.map(manifest => replacePlaceholders(manifest, userParams));
 
         // Apply Kubernetes manifests
         await applyK8sManifests(manifests);
