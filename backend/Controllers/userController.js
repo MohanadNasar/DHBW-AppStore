@@ -1,13 +1,9 @@
-//userController.js
 const User = require('../Models/User');
 const App = require('../Models/App');
 const k8s = require('@kubernetes/client-node');
-const fs = require('fs');
-const path = require('path');
 const yaml = require('js-yaml');
 
-
-//Register a new user
+// Register a new user
 const registerUser = async (req, res) => {
     const { username, email, password } = req.body;
     try {
@@ -40,7 +36,6 @@ const loginUser = async (req, res) => {
     }
 };
 
-
 // Function to apply Kubernetes manifests
 const applyK8sManifests = async (manifests) => {
     const kc = new k8s.KubeConfig();
@@ -50,6 +45,10 @@ const applyK8sManifests = async (manifests) => {
     for (const manifest of manifests) {
         try {
             if (manifest.kind === 'Deployment') {
+                // Ensure replicas is an integer
+                if (typeof manifest.spec.replicas === 'string') {
+                    manifest.spec.replicas = parseInt(manifest.spec.replicas, 10);
+                }
                 await k8sApi.createNamespacedDeployment('default', manifest);
             }
             // Handle other Kubernetes resources like Service, Ingress, etc.
@@ -126,9 +125,6 @@ const installAppVersion = async (req, res) => {
     }
 };
 
-
-
-
 // List installed apps and their versions
 const listInstalledApps = async (req, res) => {
     const { userId } = req.params;
@@ -163,9 +159,13 @@ const uninstallAppVersion = async (req, res) => {
         const k8sApi = kc.makeApiClient(k8s.AppsV1Api);
 
         console.log(`Deleting deployment: ${appToUninstall.deploymentName}`);
-        await k8sApi.deleteNamespacedDeployment(appToUninstall.deploymentName, 'default');
-        console.log(`Deployment deleted: ${appToUninstall.deploymentName}`);
-        
+        try {
+            await k8sApi.deleteNamespacedDeployment(appToUninstall.deploymentName, 'default');
+            console.log(`Deployment deleted: ${appToUninstall.deploymentName}`);
+        } catch (deleteError) {
+            console.error(`Error deleting deployment: ${appToUninstall.deploymentName}`, deleteError.body);
+        }
+
         // Remove the specific app version from the user's installed apps
         user.installedApps = user.installedApps.filter(app => !(app.appId.toString() === appId && app.version === version));
         await user.save();
