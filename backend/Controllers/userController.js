@@ -162,8 +162,10 @@ const uninstallAppVersion = async (req, res) => {
         kc.loadFromCluster();
         const k8sApi = kc.makeApiClient(k8s.AppsV1Api);
 
+        console.log(`Deleting deployment: ${appToUninstall.deploymentName}`);
         await k8sApi.deleteNamespacedDeployment(appToUninstall.deploymentName, 'default');
-
+        console.log(`Deployment deleted: ${appToUninstall.deploymentName}`);
+        
         // Remove the specific app version from the user's installed apps
         user.installedApps = user.installedApps.filter(app => !(app.appId.toString() === appId && app.version === version));
         await user.save();

@@ -2,6 +2,8 @@ const fs = require('fs');
 const path = require('path');
 const yaml = require('js-yaml');
 const App = require('../Models/App');
+const User = require('../Models/User');
+const k8s = require('@kubernetes/client-node');
 
 const getApps = async (req, res) => {
     try {
@@ -230,6 +232,18 @@ const toggleAppVersionStatus = async (req, res) => {
     }
 };
 
+const deleteK8sDeployment = async (deploymentName) => {
+    const kc = new k8s.KubeConfig();
+    kc.loadFromCluster();
+    const k8sApi = kc.makeApiClient(k8s.AppsV1Api);
+
+    try {
+        await k8sApi.deleteNamespacedDeployment(deploymentName, 'default');
+    } catch (error) {
+        console.error(`Error deleting deployment: ${deploymentName}`, error.body);
+    }
+};
+
 // Delete an app version
 const deleteAppVersion = async (req, res) => {
     const { appId, versionId } = req.params;
@@ -238,10 +252,34 @@ const deleteAppVersion = async (req, res) => {
         if (!app) {
             return res.status(404).json({ message: 'App not found' });
         }
-        app.versions.id(versionId).deleteOne();
+
+        const versionToDelete = app.versions.id(versionId);
+        if (!versionToDelete) {
+            return res.status(404).json({ message: 'App version not found' });
+        }
+
+        const version = versionToDelete.version;
+
+        // Find users with this app version installed
+        const users = await User.find({ "installedApps.appId": appId, "installedApps.version": version });
+
+        // Delete the corresponding Kubernetes deployments
+        for (const user of users) {
+            const appToUninstall = user.installedApps.find(app => app.appId.toString() === appId && app.version === version);
+            if (appToUninstall) {
+                await deleteK8sDeployment(appToUninstall.deploymentName);
+                user.installedApps = user.installedApps.filter(app => !(app.appId.toString() === appId && app.version === version));
+                await user.save();
+            }
+        }
+
+        // Delete the app version
+        versionToDelete.deleteOne();
         await app.save();
+
         res.status(200).json({ message: 'App version deleted successfully' });
     } catch (error) {
+        console.error('Error deleting app version:', error);
         res.status(400).json({ error: error.message });
     }
 };
@@ -250,9 +288,30 @@ const deleteAppVersion = async (req, res) => {
 const deleteApp = async (req, res) => {
     const { appId } = req.params;
     try {
-        await App.findByIdAndDelete(appId);
+        const app = await App.findById(appId);
+        if (!app) {
+            return res.status(404).json({ message: 'App not found' });
+        }
+
+        // Find users with any version of this app installed
+        const users = await User.find({ "installedApps.appId": appId });
+
+        // Delete the corresponding Kubernetes deployments
+        for (const user of users) {
+            const appsToUninstall = user.installedApps.filter(app => app.appId.toString() === appId);
+            for (const appToUninstall of appsToUninstall) {
+                await deleteK8sDeployment(appToUninstall.deploymentName);
+            }
+            user.installedApps = user.installedApps.filter(app => app.appId.toString() !== appId);
+            await user.save();
+        }
+
+        // Delete the app
+        await app.deleteOne();
+
         res.status(200).json({ message: 'App deleted successfully' });
     } catch (error) {
+        console.error('Error deleting app:', error);
         res.status(400).json({ error: error.message });
     }
 };
