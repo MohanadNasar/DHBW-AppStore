@@ -104,7 +104,7 @@ const installAppVersion = async (req, res) => {
         }
 
         // Create a unique deployment name
-        const deploymentName = `${app.name}-${version}`.toLowerCase().replace(/[^a-z0-9-]/g, '');
+        const deploymentName = `${app.name}-${version.replace(/\./g, '-')}`.toLowerCase().replace(/[^a-z0-9-]/g, '');
 
         // Add the app version to the user's installed apps
         user.installedApps.push({ appId, version, parameters, deploymentName });
