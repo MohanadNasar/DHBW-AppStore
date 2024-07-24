@@ -59,11 +59,21 @@ const applyK8sManifests = async (manifests) => {
     }
 };
 
-// Function to replace placeholders in manifests with actual parameters
-const replacePlaceholders = (manifest, parameters) => {
-    const manifestStr = JSON.stringify(manifest);
-    const replacedStr = manifestStr.replace(/{{\s*([^}]+)\s*}}/g, (match, p1) => parameters[p1.trim()] || match);
-    return JSON.parse(replacedStr);
+// Function to replace placeholders in the component descriptor and manifests with actual parameters
+const replacePlaceholders = (obj, parameters) => {
+    if (typeof obj === 'string') {
+        return obj.replace(/{{\s*([^}]+)\s*}}/g, (match, p1) => parameters[p1.trim()] || match);
+    } else if (Array.isArray(obj)) {
+        return obj.map(item => replacePlaceholders(item, parameters));
+    } else if (typeof obj === 'object' && obj !== null) {
+        const result = {};
+        for (const key of Object.keys(obj)) {
+            result[key] = replacePlaceholders(obj[key], parameters);
+        }
+        return result;
+    } else {
+        return obj;
+    }
 };
 
 const installAppVersion = async (req, res) => {
