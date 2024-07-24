@@ -103,6 +103,13 @@ const installAppVersion = async (req, res) => {
             }
         }
 
+        // Create a unique deployment name
+        const deploymentName = `${app.name}-${version}`.toLowerCase().replace(/[^a-z0-9-]/g, '');
+
+        // Add the app version to the user's installed apps
+        user.installedApps.push({ appId, version, parameters, deploymentName });
+        await user.save();
+
         // Retrieve the component descriptor from the database
         const componentDescriptor = yaml.load(appVersion.componentDescriptor);
 
@@ -111,13 +118,6 @@ const installAppVersion = async (req, res) => {
 
         // Apply Kubernetes manifests
         await applyK8sManifests(manifests);
-
-        // Get the deployment name from the manifest
-        const deploymentName = manifests.find(manifest => manifest.kind === 'Deployment').metadata.name;
-
-        // Add the app version and deployment name to the user's installed apps
-        user.installedApps.push({ appId, version, parameters, deploymentName });
-        await user.save();
 
         res.status(201).json(user);
     } catch (error) {
