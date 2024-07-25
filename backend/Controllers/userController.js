@@ -59,16 +59,16 @@ const applyK8sManifests = async (manifests) => {
     }
 };
 
-// Function to replace placeholders in the component descriptor and manifests with actual parameters from the user
-const replacePlaceholders = (obj, userParams) => {
+// Function to replace placeholders in the component descriptor and manifests with actual parameters
+const replacePlaceholders = (obj, parameters) => {
     if (typeof obj === 'string') {
-        return obj.replace(/{{\s*([^}]+)\s*}}/g, (match, p1) => userParams[p1.trim()] || match);
+        return obj.replace(/{{\s*([^}]+)\s*}}/g, (match, p1) => parameters[p1.trim()] || match);
     } else if (Array.isArray(obj)) {
-        return obj.map(item => replacePlaceholders(item, userParams));
+        return obj.map(item => replacePlaceholders(item, parameters));
     } else if (typeof obj === 'object' && obj !== null) {
         const result = {};
         for (const key of Object.keys(obj)) {
-            result[key] = replacePlaceholders(obj[key], userParams);
+            result[key] = replacePlaceholders(obj[key], parameters);
         }
         return result;
     } else {
@@ -119,15 +119,21 @@ const installAppVersion = async (req, res) => {
         user.installedApps.push({ appId, version, parameters, deploymentName });
         await user.save();
 
-        // Retrieve the component descriptor from the database
+        // Update the component descriptor in the app schema with provided parameters
+        appVersion.requiredParams.forEach(param => {
+            if (parameters[param.name]) {
+                param.value = parameters[param.name];
+            }
+        });
+
+        // Save the updated app
+        await app.save();
+
+        // Retrieve the updated component descriptor from the database
         let componentDescriptor = yaml.load(appVersion.componentDescriptor);
 
-        // Update component descriptor with provided parameters from the user's installed app data
-        const userParams = user.installedApps.find(app => app.appId.toString() === appId && app.version === version).parameters;
-        componentDescriptor = replacePlaceholders(componentDescriptor, userParams);
-
         // Inject parameters into manifests
-        const manifests = componentDescriptor.spec.deployment.manifests.map(manifest => replacePlaceholders(manifest, userParams));
+        const manifests = componentDescriptor.spec.deployment.manifests.map(manifest => replacePlaceholders(manifest, parameters));
 
         // Apply Kubernetes manifests
         await applyK8sManifests(manifests);
