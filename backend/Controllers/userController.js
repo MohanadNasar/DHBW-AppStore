@@ -41,18 +41,27 @@ const applyK8sManifests = async (manifests) => {
     const kc = new k8s.KubeConfig();
     kc.loadFromCluster();
     const k8sApi = kc.makeApiClient(k8s.AppsV1Api);
+    const coreV1Api = kc.makeApiClient(k8s.CoreV1Api);
+    const networkingV1Api = kc.makeApiClient(k8s.NetworkingV1Api);
 
     for (const manifest of manifests) {
         try {
-            if (manifest.kind === 'Deployment') {
-                // Ensure replicas is an integer
-                if (typeof manifest.spec.replicas === 'string') {
-                    manifest.spec.replicas = parseInt(manifest.spec.replicas, 10);
-                }
-                await k8sApi.createNamespacedDeployment('default', manifest);
+            switch (manifest.kind) {
+                case 'Deployment':
+                    if (typeof manifest.spec.replicas === 'string') {
+                        manifest.spec.replicas = parseInt(manifest.spec.replicas, 10);
+                    }
+                    await k8sApi.createNamespacedDeployment('default', manifest);
+                    break;
+                case 'Service':
+                    await coreV1Api.createNamespacedService('default', manifest);
+                    break;
+                case 'Ingress':
+                    await networkingV1Api.createNamespacedIngress('default', manifest);
+                    break;
+                default:
+                    console.error(`Unsupported manifest kind: ${manifest.kind}`);
             }
-            // Handle other Kubernetes resources like Service, Ingress, etc.
-            // You might need to add other API clients like k8s.CoreV1Api for Service
         } catch (error) {
             console.error(`Error applying manifest: ${manifest.kind} ${manifest.metadata.name}`, error.body);
         }
@@ -119,25 +128,86 @@ const installAppVersion = async (req, res) => {
         user.installedApps.push({ appId, version, parameters, deploymentName });
         await user.save();
 
-        // Retrieve the component descriptor from the database
-        let componentDescriptor = yaml.load(appVersion.componentDescriptor);
-
-        // Update the component descriptor with the parameter values
+        // Update the component descriptor in the app schema with provided parameters
         appVersion.requiredParams.forEach(param => {
             if (parameters[param.name]) {
                 param.value = parameters[param.name];
             }
         });
 
-        // Update the manifests in the component descriptor
-        componentDescriptor.spec.deployment.manifests = replacePlaceholders(componentDescriptor.spec.deployment.manifests, parameters);
-
-        // Update the component descriptor in the database
-        appVersion.componentDescriptor = yaml.dump(componentDescriptor);
+        // Save the updated app
         await app.save();
 
+        // Retrieve the updated component descriptor from the database
+        let componentDescriptor = yaml.load(appVersion.componentDescriptor);
+
+        // Inject parameters into manifests
+        componentDescriptor = replacePlaceholders(componentDescriptor, parameters);
+        const manifests = componentDescriptor.spec.deployment.manifests;
+
+        // Add Service manifest
+        const serviceManifest = {
+            apiVersion: 'v1',
+            kind: 'Service',
+            metadata: {
+                name: deploymentName,
+                labels: {
+                    app: deploymentName
+                }
+            },
+            spec: {
+                selector: {
+                    app: deploymentName
+                },
+                ports: [
+                    {
+                        protocol: 'TCP',
+                        port: 80,
+                        targetPort: 80
+                    }
+                ]
+            }
+        };
+        manifests.push(serviceManifest);
+
+        // Add Ingress manifest
+        const ingressManifest = {
+            apiVersion: 'networking.k8s.io/v1',
+            kind: 'Ingress',
+            metadata: {
+                name: deploymentName,
+                labels: {
+                    app: deploymentName
+                }
+            },
+            spec: {
+                rules: [
+                    {
+                        host: `mohanad-portfolio.com`, 
+                        http: {
+                            paths: [
+                                {
+                                    path: '/',
+                                    pathType: 'Prefix',
+                                    backend: {
+                                        service: {
+                                            name: deploymentName,
+                                            port: {
+                                                number: 80
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        };
+        manifests.push(ingressManifest);
+
         // Apply Kubernetes manifests
-        await applyK8sManifests(componentDescriptor.spec.deployment.manifests);
+        await applyK8sManifests(manifests);
 
         res.status(201).json(user);
     } catch (error) {

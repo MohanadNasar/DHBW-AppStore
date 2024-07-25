@@ -23,7 +23,7 @@ spec:
     backend:
       image:
         repository: mohanadnassar/backend
-        tag: "2024-07-25.02"
+        tag: "2024-07-25.03"
         pullPolicy: IfNotPresent
       service:
         type: ClusterIP
