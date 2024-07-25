@@ -244,10 +244,12 @@ const uninstallAppVersion = async (req, res) => {
             return res.status(404).json({ message: 'App version not installed' });
         }
 
-        // Delete the Kubernetes deployment
+        // Delete the Kubernetes deployment, service, and ingress
         const kc = new k8s.KubeConfig();
         kc.loadFromCluster();
         const k8sApi = kc.makeApiClient(k8s.AppsV1Api);
+        const coreV1Api = kc.makeApiClient(k8s.CoreV1Api);
+        const networkingV1Api = kc.makeApiClient(k8s.NetworkingV1Api);
 
         console.log(`Deleting deployment: ${appToUninstall.deploymentName}`);
         try {
@@ -255,6 +257,22 @@ const uninstallAppVersion = async (req, res) => {
             console.log(`Deployment deleted: ${appToUninstall.deploymentName}`);
         } catch (deleteError) {
             console.error(`Error deleting deployment: ${appToUninstall.deploymentName}`, deleteError.body);
+        }
+
+        console.log(`Deleting service: ${appToUninstall.deploymentName}`);
+        try {
+            await coreV1Api.deleteNamespacedService(appToUninstall.deploymentName, 'default');
+            console.log(`Service deleted: ${appToUninstall.deploymentName}`);
+        } catch (deleteError) {
+            console.error(`Error deleting service: ${appToUninstall.deploymentName}`, deleteError.body);
+        }
+
+        console.log(`Deleting ingress: ${appToUninstall.deploymentName}`);
+        try {
+            await networkingV1Api.deleteNamespacedIngress(appToUninstall.deploymentName, 'default');
+            console.log(`Ingress deleted: ${appToUninstall.deploymentName}`);
+        } catch (deleteError) {
+            console.error(`Error deleting ingress: ${appToUninstall.deploymentName}`, deleteError.body);
         }
 
         // Remove the specific app version from the user's installed apps
