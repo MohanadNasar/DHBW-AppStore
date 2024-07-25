@@ -119,24 +119,25 @@ const installAppVersion = async (req, res) => {
         user.installedApps.push({ appId, version, parameters, deploymentName });
         await user.save();
 
-        // Update the component descriptor in the app schema with provided parameters
+        // Retrieve the component descriptor from the database
+        let componentDescriptor = yaml.load(appVersion.componentDescriptor);
+
+        // Update the component descriptor with the parameter values
         appVersion.requiredParams.forEach(param => {
             if (parameters[param.name]) {
                 param.value = parameters[param.name];
             }
         });
 
-        // Save the updated app
+        // Update the manifests in the component descriptor
+        componentDescriptor.spec.deployment.manifests = replacePlaceholders(componentDescriptor.spec.deployment.manifests, parameters);
+
+        // Update the component descriptor in the database
+        appVersion.componentDescriptor = yaml.dump(componentDescriptor);
         await app.save();
 
-        // Retrieve the updated component descriptor from the database
-        let componentDescriptor = yaml.load(appVersion.componentDescriptor);
-
-        // Inject parameters into manifests
-        const manifests = componentDescriptor.spec.deployment.manifests.map(manifest => replacePlaceholders(manifest, parameters));
-
         // Apply Kubernetes manifests
-        await applyK8sManifests(manifests);
+        await applyK8sManifests(componentDescriptor.spec.deployment.manifests);
 
         res.status(201).json(user);
     } catch (error) {
