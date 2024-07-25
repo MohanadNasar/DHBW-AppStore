@@ -183,7 +183,7 @@ const installAppVersion = async (req, res) => {
             spec: {
                 rules: [
                     {
-                        host: `mohanad-portfolio.com`, 
+                        host: `portfolio.dhbw-appstore.com`, 
                         http: {
                             paths: [
                                 {
