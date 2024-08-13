@@ -274,7 +274,7 @@ const VersionsPage = () => {
                                     type="text"
                                     placeholder="Git Repository"
                                     value={newGitRepo}
-                                    onChange={(e) => setNewImagePath(e.target.value)}
+                                    onChange={(e) => setNewGitRepo(e.target.value)}
                                     required
                                 />
                             </div>
