@@ -86,8 +86,7 @@ const replacePlaceholders = (obj, parameters) => {
 };
 
 const installAppVersion = async (req, res) => {
-    const { userId, appId } = req.params;
-    const { version, parameters } = req.body;
+    const { userId, appId } = req.params;    const { version, parameters, gitRepo } = req.body;  // Adding gitRepo to the request body
 
     try {
         const user = await User.findById(userId);
@@ -100,7 +99,8 @@ const installAppVersion = async (req, res) => {
             return res.status(404).json({ message: 'App not found' });
         }
 
-        const alreadyInstalled = user.installedApps.some(installedApp => installedApp.appId.toString() === appId && installedApp.version === version);
+        const alreadyInstalled = user.installedApps.some(
+            installedApp => installedApp.appId.toString() === appId && installedApp.version === version);
         if (alreadyInstalled) {
             return res.status(400).json({ message: 'You have already installed this app version' });
         }
@@ -122,26 +122,15 @@ const installAppVersion = async (req, res) => {
         }
 
         // Create a unique deployment name
-        const deploymentName = `${app.name}-${version.replace(/\./g, '-')}`.toLowerCase().replace(/[^a-z0-9-]/g, '');
+        const deploymentName = `${app.name}-${version.replace(/\./g, '-')}`.
+        toLowerCase().replace(/[^a-z0-9-]/g, '');
 
         // Add the app version to the user's installed apps
         user.installedApps.push({ appId, version, parameters, deploymentName });
         await user.save();
 
-        // Update the component descriptor in the app schema with provided parameters
-        appVersion.requiredParams.forEach(param => {
-            if (parameters[param.name]) {
-                param.value = parameters[param.name];
-            }
-        });
-
-        // Save the updated app
-        await app.save();
-
-        // Retrieve the updated component descriptor from the database
+        // Retrieve and update the component descriptor with provided parameters
         let componentDescriptor = yaml.load(appVersion.componentDescriptor);
-
-        // Inject parameters into manifests
         componentDescriptor = replacePlaceholders(componentDescriptor, parameters);
         const manifests = componentDescriptor.spec.deployment.manifests;
 
@@ -183,7 +172,7 @@ const installAppVersion = async (req, res) => {
             spec: {
                 rules: [
                     {
-                        host: `portfolio.dhbw-appstore.com`, 
+                        host: `${app.name.toLowerCase().replace(/[^a-z0-9-]/g, '')}.dhbw-appstore.com`,
                         http: {
                             paths: [
                                 {
@@ -209,11 +198,60 @@ const installAppVersion = async (req, res) => {
         // Apply Kubernetes manifests
         await applyK8sManifests(manifests);
 
+        // Configure FluxCD for the installed application
+        await configureFluxCD(gitRepo, deploymentName);
+
         res.status(201).json(user);
     } catch (error) {
         console.error('Error installing app version:', error);
         res.status(400).json({ error: error.message });
     }
+};
+
+const configureFluxCD = async (gitRepo, deploymentName) => {
+    const fluxConfig = `
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: ${deploymentName}-repo
+  namespace: flux-system
+spec:
+  interval: 1m0s
+  url: ${gitRepo}
+  ref:
+    branch: main
+  secretRef:
+    name: flux-system
+  url: ssh://git@github.com/MohanadNasar/DHBW-AppStore
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: ${deploymentName}-kustomization
+  namespace: flux-system
+spec:
+  interval: 10m0s
+  
+  path: ./${deploymentName}
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: ${deploymentName}-repo
+    namespace: flux-system
+`;
+
+    // Write the FluxCD configuration to a file
+    fs.writeFileSync(`/tmp/${deploymentName}-flux.yaml`, fluxConfig);
+
+    // Apply the FluxCD configuration to the Kubernetes cluster
+    const { exec } = require('child_process');
+    exec(`kubectl apply -f /tmp/${deploymentName}-flux.yaml`, (err, stdout, stderr) => {
+        if (err) {
+            console.error(`Error applying FluxCD configuration: ${err.message}`);
+            return;
+        }
+        console.log(`FluxCD configuration applied: ${stdout}`);
+    });
 };
 
 // List installed apps and their versions

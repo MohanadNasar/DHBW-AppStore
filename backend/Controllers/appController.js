@@ -74,7 +74,8 @@ const generateComponentDescriptor = (app, version, requiredParams, optionalParam
                                             image: imagePath || `docker.io/${appNameLowerCase}:${version}`,
                                             ports: [
                                                 {
-                                                    containerPort: optionalParams.find(param => param.name === 'port')?.value || 80
+                                                    containerPort: optionalParams.find(param => param.name 
+                                                        === 'port')?.value || 80
                                                 }
                                             ],
                                             env: optionalParams.find(param => param.name === 'env')?.value || []

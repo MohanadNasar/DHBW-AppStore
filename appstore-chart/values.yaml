@@ -1,5 +1,4 @@
 # values.yaml
-
 replicaCount: 1
 
 backend:

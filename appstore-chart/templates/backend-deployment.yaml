@@ -27,4 +27,5 @@ spec:
             - containerPort: {{ .Values.backend.service.port }}
           env:
             - name: MONGO_URI
-              value: "mongodb+srv://mohanadnasar:1QA2WS3ED4RF@dhbw-appstore.6z23fql.mongodb.net/?retryWrites=true&w=majority&appName=DHBW-AppStore/test"
+              value: "mongodb+srv://mohanadnasar:1QA2WS3ED4RF@dhbw-appstore.6z23fql.mongodb.net/
+              ?retryWrites=true&w=majority&appName=DHBW-AppStore/test"

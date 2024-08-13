@@ -18,7 +18,8 @@ const VersionsPage = () => {
     const [newVersion, setNewVersion] = useState(''); 
     const [newVersionRequiredParams, setNewVersionRequiredParams] = useState([]); 
     const [newVersionOptionalParams, setNewVersionOptionalParams] = useState([]); 
-    const [newImagePath, setNewImagePath] = useState(''); 
+    const [newImagePath, setNewImagePath] = useState('');
+    const [newGitRepo, setNewGitRepo] = useState(''); 
 
 
     useEffect(() => {
@@ -40,6 +41,8 @@ const VersionsPage = () => {
         setNewVersionRequiredParams([]);
         setNewVersionOptionalParams([]);
         setAddVersionOpen(true);
+        setNewGitRepo('');
+        setNewImagePath('');
     };
 
     // Function to close modal for adding a new version
@@ -261,6 +264,15 @@ const VersionsPage = () => {
                                 <input
                                     type="text"
                                     placeholder="Docker Image Path"
+                                    value={newImagePath}
+                                    onChange={(e) => setNewImagePath(e.target.value)}
+                                    required
+                                />
+                            </div>
+                            <div className="param-input">
+                                <input
+                                    type="text"
+                                    placeholder="Git Repository"
                                     value={newImagePath}
                                     onChange={(e) => setNewImagePath(e.target.value)}
                                     required
