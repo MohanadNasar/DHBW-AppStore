@@ -273,7 +273,7 @@ const VersionsPage = () => {
                                 <input
                                     type="text"
                                     placeholder="Git Repository"
-                                    value={newImagePath}
+                                    value={newGitRepo}
                                     onChange={(e) => setNewImagePath(e.target.value)}
                                     required
                                 />
