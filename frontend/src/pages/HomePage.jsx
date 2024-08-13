@@ -45,7 +45,7 @@ const HomePage = () => {
     <div className="homepage">
       <div className="welcome-section">
         <h1>Welcome to <span className='redText'>DH<span className='greyTextHero'>BW</span></span>-AppStore !!</h1>
-        <p>Empowering You with Effortless Cloud Applications Management.</p>
+        <p>Empowering You with Effortless Cloud Applications Management</p>
       </div>
 
       {error && <div className="error-message">{error}</div>}
