@@ -55,7 +55,7 @@ const generateComponentDescriptor = (app, version, requiredParams, optionalParam
                             }
                         },
                         spec: {
-                            replicas: replicasParam ? replicasParam.value : 1,
+                            replicas: replicasParam ? replicasParam.value : 4,
                             selector: {
                                 matchLabels: {
                                     app: appNameLowerCase
