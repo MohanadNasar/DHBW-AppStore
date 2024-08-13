@@ -199,7 +199,7 @@ const installAppVersion = async (req, res) => {
         await applyK8sManifests(manifests);
 
         // Configure FluxCD for the installed application
-        await configureFluxCD(gitRepo, deploymentName);
+        //await configureFluxCD(gitRepo, deploymentName);
 
         res.status(201).json(user);
     } catch (error) {
